@@ -1,0 +1,82 @@
+site_name: zelig2
+site_description: "A modern reimplementation of the Zelig R package (Imai, King, and Lau) for statistical model estimation, counterfactual simulation, and visualization"
+site_url: https://www.theodorecaputi.com/zelig2/
+repo_url: https://github.com/tlcaputi/zelig2
+repo_name: tlcaputi/zelig2
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+    - search.suggest
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - autorefs
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Vignettes:
+    - OLS Regression: vignettes/ols.md
+    - Logistic Regression: vignettes/logistic-regression.md
+    - Fixed Effects: vignettes/fixed-effects.md
+    - Survey-Weighted OLS: vignettes/survey-ols.md
+    - Survey-Weighted Logistic: vignettes/survey-logistic.md
+  - Reference:
+    - Supported Models: reference/models.md
+    - API Reference: reference/api.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/tlcaputi/zelig2

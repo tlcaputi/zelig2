@@ -1,0 +1,31 @@
+Package: zelig2
+Title: Modern Statistical Modeling with Quantities of Interest
+Version: 0.1.0
+Authors@R: person("Theodore", "Caputi", role = c("aut", "cre"),
+                  email = "tcaputi@mit.edu")
+Description: A modern reimplementation of the Zelig package (King, Tomz, and
+    Wittenberg 2000) providing a unified workflow for statistical modeling:
+    zelig2() -> setx() -> sim() -> plot(). Estimates models, sets
+    counterfactual covariate scenarios, simulates quantities of interest
+    (expected values, predicted values, first differences), and visualizes
+    results. Supports fixed effects via 'fixest', survey weights via 'survey',
+    robust/clustered/bootstrap standard errors via 'sandwich', and automatic
+    handling of categorical variables.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    fixest,
+    ggplot2,
+    MASS,
+    sandwich,
+    survey,
+    patchwork,
+    AER,
+    quantreg
+Suggests:
+    testthat (>= 3.0),
+    knitr,
+    dplyr
+Config/testthat/edition: 3

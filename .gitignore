@@ -1,0 +1,19 @@
+# R package build artifacts
+r/.Rproj.user
+r/.Rhistory
+r/.RData
+r/.Ruserdata
+r/src/*.o
+r/src/*.so
+r/src/*.dll
+
+# MkDocs build
+site/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Helper/scratch files
+docs/_generate_vignette_output.R
+docs/_vignette_output.txt
