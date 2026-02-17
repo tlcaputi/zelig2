@@ -13,7 +13,7 @@
         <link rel="canonical" href="https://www.theodorecaputi.com/zelig2/vignettes/ols/">
       
       
-        <link rel="prev" href="../../getting-started/">
+        <link rel="prev" href="../comparison/">
       
       
         <link rel="next" href="../logistic-regression/">
@@ -267,7 +267,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../comparison/" class="md-tabs__link">
           
   
   
@@ -454,6 +454,34 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparison with Zelig
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1125,6 +1153,7 @@
 <p>As household income increases from $25,000 to $250,000, expected symptom scores decline from <strong>4.35 to 1.99</strong> --- a reduction of 2.36 points (54%). Plotting these results produces a ribbon plot showing the confidence band:</p>
 <div class="language-r highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </span></code></pre></div>
+<p><img alt="Expected mental health scores across income levels, with 95% confidence band" src="../../assets/ols-range.png" /></p>
 <h2 id="robust-standard-errors">Robust Standard Errors<a class="headerlink" href="#robust-standard-errors" title="Permanent link">&para;</a></h2>
 <p>When heteroskedasticity is a concern, use <code>vcov_type</code> to specify robust standard errors:</p>
 <div class="language-r highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">z_robust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
