@@ -1,0 +1,2049 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A modern reimplementation of the Zelig R package (Imai, King, and Lau) for statistical model estimation, counterfactual simulation, and visualization">
+      
+      
+      
+        <link rel="canonical" href="https://www.theodorecaputi.com/zelig2/reference/api/">
+      
+      
+        <link rel="prev" href="../models/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>API Reference - zelig2</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="zelig2" class="md-header__button md-logo" aria-label="zelig2" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            zelig2
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/tlcaputi/zelig2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tlcaputi/zelig2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../vignettes/ols/" class="md-tabs__link">
+          
+  
+  
+  Vignettes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../models/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="zelig2" class="md-nav__button md-logo" aria-label="zelig2" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    zelig2
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/tlcaputi/zelig2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    tlcaputi/zelig2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vignettes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Vignettes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vignettes/ols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OLS Regression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vignettes/logistic-regression/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Logistic Regression
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vignettes/fixed-effects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fixed Effects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vignettes/survey-ols/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Survey-Weighted OLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vignettes/survey-logistic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Survey-Weighted Logistic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supported Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zelig2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zelig2()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setx()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setx1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setx1()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sim()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        summary()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coef" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coef()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcov" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vcov()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utility-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utility Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utility Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from_zelig2_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_zelig2_model()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_zelig2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_zelig2()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list_models()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zelig2-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zelig2 object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setx-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setx object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sim-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sim object
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-variance-covariance-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Variance-Covariance Specifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-survey-designs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complex Survey Designs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed-effects-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed Effects Models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Scenarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zelig2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zelig2()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setx()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setx1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setx1()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sim()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        summary()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coef" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        coef()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcov" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vcov()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utility-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utility Functions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utility Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from_zelig2_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_zelig2_model()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_zelig2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        to_zelig2()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list_models()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zelig2-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        zelig2 object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setx-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        setx object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sim-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sim object
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Usage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-variance-covariance-specifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Variance-Covariance Specifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complex-survey-designs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complex Survey Designs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed-effects-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed Effects Models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Scenarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<p>Complete reference for all user-facing functions in the <code>zelig2</code> package. The core workflow --- <code>zelig2() -&gt; setx() -&gt; sim() -&gt; plot()</code> --- mirrors the original <a href="https://github.com/IQSS/Zelig">Zelig</a> interface (Imai, King, and Lau 2007, 2008), implementing the simulation-based approach to statistical interpretation from King, Tomz, and Wittenberg (2000, <em>AJPS</em>).</p>
+<h2 id="core-functions">Core Functions<a class="headerlink" href="#core-functions" title="Permanent link">&para;</a></h2>
+<h3 id="zelig2">zelig2()<a class="headerlink" href="#zelig2" title="Permanent link">&para;</a></h3>
+<p>Main entry point for fitting statistical models with simulation-based inference.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">zelig2</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">survey_design</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">       </span><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">strata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">fpc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">nest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">       </span><span class="n">fixef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;default&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">       </span><span class="n">bootstrap_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">500</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>formula</code></td>
+<td>formula</td>
+<td>Model formula. For fixed effects, use <code>y ~ x1 + x2 \| fe_var</code> syntax</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>character</td>
+<td>Model type: "ls", "logit", "probit", "poisson", "negbin", "gamma", "tobit", "quantile"</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>data.frame</td>
+<td>Input dataset. Character columns automatically converted to factors</td>
+</tr>
+<tr>
+<td><code>weights</code></td>
+<td>numeric vector, formula, or character</td>
+<td>Survey or frequency weights. Can be vector, one-sided formula (e.g., <code>~weight_var</code>), or column name string</td>
+</tr>
+<tr>
+<td><code>survey_design</code></td>
+<td>survey.design</td>
+<td>Pre-constructed survey design object from <code>survey</code> package</td>
+</tr>
+<tr>
+<td><code>ids</code></td>
+<td>formula or character</td>
+<td>PSU/cluster identifiers for survey design (e.g., <code>~psu</code>)</td>
+</tr>
+<tr>
+<td><code>strata</code></td>
+<td>formula or character</td>
+<td>Stratification variable for survey design (e.g., <code>~stratum</code>)</td>
+</tr>
+<tr>
+<td><code>fpc</code></td>
+<td>formula or character</td>
+<td>Finite population correction for survey design</td>
+</tr>
+<tr>
+<td><code>nest</code></td>
+<td>logical</td>
+<td>Whether PSUs are nested within strata (default FALSE)</td>
+</tr>
+<tr>
+<td><code>fixef</code></td>
+<td>formula or character vector</td>
+<td>Alternative fixed effects specification. One-sided formula (e.g., <code>~state</code>) or character vector of variable names</td>
+</tr>
+<tr>
+<td><code>vcov_type</code></td>
+<td>character</td>
+<td>Variance-covariance type: "default", "robust"/"HC1", "HC0", "HC2", "HC3", "HC4", "cluster", "bootstrap"</td>
+</tr>
+<tr>
+<td><code>cluster</code></td>
+<td>formula or character</td>
+<td>Cluster variable for cluster-robust standard errors</td>
+</tr>
+<tr>
+<td><code>bootstrap_n</code></td>
+<td>integer</td>
+<td>Number of bootstrap replicates when <code>vcov_type = "bootstrap"</code> (default 500)</td>
+</tr>
+<tr>
+<td><code>num</code></td>
+<td>integer</td>
+<td>Number of simulation draws for quantities of interest (default 1000)</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>additional arguments</td>
+<td>Model-specific parameters passed to underlying fitting function</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> A <code>zelig2</code> object containing the fitted model, model specifications, and methods for simulation and visualization.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Basic OLS</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">z1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">income</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Logit with robust standard errors</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">z2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">employed</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">education</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;logit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">             </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;robust&quot;</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># Fixed effects model</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">z3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">outcome</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">controls</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state</span><span class="p">,</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">             </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">panel_data</span><span class="p">)</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1"># Survey-weighted model</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="n">z4</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">satisfaction</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">service_quality</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">survey_data</span><span class="p">,</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">             </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">survey_weight</span><span class="p">,</span><span class="w"> </span><span class="n">strata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">region</span><span class="p">,</span><span class="w"> </span><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">cluster_id</span><span class="p">)</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># Quantile regression at 75th percentile</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="n">z5</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">wage</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">experience</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;quantile&quot;</span><span class="p">,</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">             </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span><span class="w"> </span><span class="n">tau</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h3 id="setx">setx()<a class="headerlink" href="#setx" title="Permanent link">&para;</a></h3>
+<p>Set covariate values to define a scenario for simulation of quantities of interest.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nf">setx</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td>zelig2</td>
+<td>Fitted zelig2 model object</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>named arguments</td>
+<td>Covariate values. One variable can be a vector to create range scenarios</td>
+</tr>
+<tr>
+<td><code>fn</code></td>
+<td>function or character</td>
+<td>Default function applied to unspecified numeric covariates (e.g., "mean", "median", or custom function)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> A <code>setx</code> object containing the specified covariate scenario. Can be passed to <code>sim()</code>.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Set all covariates to their means</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">x1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Set specific values</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">x2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span><span class="p">)</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Range scenario: vary education while holding others at mean</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">x3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="o">:</span><span class="m">20</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Multiple factor levels</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">x4</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;North&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;South&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;East&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;West&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">median</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Notes:</strong>
+- For factors, must specify valid factor levels
+- Unspecified covariates use <code>fn</code> if numeric, or mode if categorical
+- Only one variable should vary in a single <code>setx()</code> call for range plots</p>
+<hr />
+<h3 id="setx1">setx1()<a class="headerlink" href="#setx1" title="Permanent link">&para;</a></h3>
+<p>Set a contrast scenario for computing first differences (treatment effects).</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nf">setx1</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<p>Same as <code>setx()</code>. Used in conjunction with <code>setx()</code> to define counterfactual scenarios.</p>
+<p><strong>Returns:</strong> A <code>setx1</code> object defining the contrast scenario.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># First difference: treatment effect</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">x_control</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">x_treat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx1</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># Before/after comparison</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">x_before</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">policy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2010</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">x_after</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx1</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">policy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2015</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Usage:</strong> Call <code>sim()</code> with both <code>setx()</code> and <code>setx1()</code> objects to compute first differences.</p>
+<hr />
+<h3 id="sim">sim()<a class="headerlink" href="#sim" title="Permanent link">&para;</a></h3>
+<p>Simulate quantities of interest from a fitted model and specified covariate scenarios.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nf">sim</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td>zelig2</td>
+<td>Fitted model with attached <code>setx()</code> and optionally <code>setx1()</code> scenarios</td>
+</tr>
+<tr>
+<td><code>num</code></td>
+<td>integer</td>
+<td>Number of simulation draws. Overrides default from <code>zelig2()</code> call</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>additional arguments</td>
+<td>Additional parameters for simulation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> A <code>sim</code> object containing simulated quantities:
+- <code>ev</code>: Expected values (predictions)
+- <code>pv</code>: Predicted values (with fundamental uncertainty)
+- <code>fd</code>: First differences (if <code>setx1()</code> was specified)</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Basic prediction</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">income</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">education</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">)</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">s</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1"># First differences</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">employed</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">training</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;logit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">)</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">training</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">)</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx1</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">training</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="n">s</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="c1"># Override number of simulations</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="n">s</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5000</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h3 id="plot">plot()<a class="headerlink" href="#plot" title="Permanent link">&para;</a></h3>
+<p>Visualize simulation results. Automatically selects appropriate plot type based on scenario.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">,</span><span class="w"> </span><span class="n">ci</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>sim object</td>
+<td>Simulation results from <code>sim()</code></td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>additional arguments</td>
+<td>Graphical parameters</td>
+</tr>
+<tr>
+<td><code>ci</code></td>
+<td>numeric</td>
+<td>Confidence interval level (default 0.95 for 95% CI)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> A ggplot object.</p>
+<p><strong>Plot types:</strong>
+- Single scenario: density plot of expected values
+- Range scenario: line plot with confidence bands
+- First differences: density plot of treatment effect</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Density plot for single scenario</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nf">plot</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Range plot with 90% CI</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="nf">plot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">ci</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.90</span><span class="p">)</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Customize with ggplot2</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="nf">plot</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">labs</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Treatment Effect Distribution&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nf">theme_minimal</span><span class="p">()</span>
+</span></code></pre></div>
+<hr />
+<h3 id="summary">summary()<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h3>
+<p>Print model summary including coefficient table and simulation results.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nf">summary</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td>zelig2 or sim object</td>
+<td>Fitted model or simulation results</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>additional arguments</td>
+<td>Passed to underlying summary methods</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> Prints formatted summary to console. For sim objects, includes quantiles of simulated quantities.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Model summary</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Simulation summary</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="nf">summary</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h3 id="coef">coef()<a class="headerlink" href="#coef" title="Permanent link">&para;</a></h3>
+<p>Extract model coefficients.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nf">coef</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td>zelig2</td>
+<td>Fitted model object</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>additional arguments</td>
+<td>Passed to underlying coef methods</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> Named numeric vector of coefficients.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">beta</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">coef</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">beta</span><span class="p">[</span><span class="s">&quot;education&quot;</span><span class="p">]</span>
+</span></code></pre></div>
+<hr />
+<h3 id="vcov">vcov()<a class="headerlink" href="#vcov" title="Permanent link">&para;</a></h3>
+<p>Extract variance-covariance matrix of coefficients.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nf">vcov</span><span class="p">(</span><span class="n">object</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td>zelig2</td>
+<td>Fitted model object</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>additional arguments</td>
+<td>Passed to underlying vcov methods</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> Variance-covariance matrix reflecting the specified <code>vcov_type</code>.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Standard vcov</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">V</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">vcov</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1"># For robust SEs, vcov reflects HC1 adjustment</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="n">z_robust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span><span class="w"> </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;robust&quot;</span><span class="p">)</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="n">V_robust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">vcov</span><span class="p">(</span><span class="n">z_robust</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="utility-functions">Utility Functions<a class="headerlink" href="#utility-functions" title="Permanent link">&para;</a></h2>
+<h3 id="from_zelig2_model">from_zelig2_model()<a class="headerlink" href="#from_zelig2_model" title="Permanent link">&para;</a></h3>
+<p>Extract the underlying fitted model object from a zelig2 wrapper.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nf">from_zelig2_model</span><span class="p">(</span><span class="n">object</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>object</code></td>
+<td>zelig2</td>
+<td>Fitted zelig2 model object</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> The original fitted model object (e.g., <code>lm</code>, <code>glm</code>, <code>fixest::feols</code>, etc.).</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">)</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="n">lm_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">from_zelig2_model</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Use with stargazer or other tools</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="n">stargazer</span><span class="o">::</span><span class="nf">stargazer</span><span class="p">(</span><span class="n">lm_fit</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h3 id="to_zelig2">to_zelig2()<a class="headerlink" href="#to_zelig2" title="Permanent link">&para;</a></h3>
+<p>Wrap an existing fitted model in a zelig2 object for use with <code>setx()</code> and <code>sim()</code>.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nf">to_zelig2</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">model_name</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fit</code></td>
+<td>model object</td>
+<td>Fitted model (lm, glm, etc.)</td>
+</tr>
+<tr>
+<td><code>model_name</code></td>
+<td>character</td>
+<td>Corresponding zelig2 model name ("ls", "logit", etc.)</td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td>additional arguments</td>
+<td>Additional metadata or parameters</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> A <code>zelig2</code> object wrapping the fitted model.</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Fit model manually</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">lm</span><span class="p">(</span><span class="n">income</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">)</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Convert to zelig2 for simulation</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">to_zelig2</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span><span class="w"> </span><span class="n">model_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">)</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">education</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">16</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span><span class="p">)</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="n">s</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></code></pre></div>
+<p><strong>Note:</strong> Useful for integrating zelig2 simulation workflow with existing model fitting code.</p>
+<hr />
+<h3 id="list_models">list_models()<a class="headerlink" href="#list_models" title="Permanent link">&para;</a></h3>
+<p>List all registered model names and descriptions.</p>
+<p><strong>Signature:</strong>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nf">list_models</span><span class="p">()</span>
+</span></code></pre></div></p>
+<p><strong>Parameters:</strong> None</p>
+<p><strong>Returns:</strong> Data frame with columns:
+- <code>model</code>: Model name string
+- <code>description</code>: Short description of the model
+- <code>family</code>: Statistical family
+- <code>supports_fixef</code>: Whether fixed effects are supported
+- <code>supports_survey</code>: Whether survey weights are supported</p>
+<p><strong>Examples:</strong></p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nf">list_models</span><span class="p">()</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="c1"># Filter for models supporting fixed effects</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="n">models</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_models</span><span class="p">()</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="n">models</span><span class="p">[</span><span class="n">models</span><span class="o">$</span><span class="n">supports_fixef</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
+</span></code></pre></div>
+<hr />
+<h2 id="object-classes">Object Classes<a class="headerlink" href="#object-classes" title="Permanent link">&para;</a></h2>
+<h3 id="zelig2-object">zelig2 object<a class="headerlink" href="#zelig2-object" title="Permanent link">&para;</a></h3>
+<p>Returned by <code>zelig2()</code>. Contains:
+- <code>fit</code>: Underlying fitted model
+- <code>model</code>: Model name
+- <code>formula</code>: Model formula
+- <code>data</code>: Original data (subset to complete cases)
+- <code>vcov_type</code>: Variance-covariance type
+- <code>num</code>: Number of simulation draws
+- Additional metadata for survey design, fixed effects, etc.</p>
+<p><strong>Methods:</strong> <code>summary()</code>, <code>coef()</code>, <code>vcov()</code>, <code>print()</code></p>
+<hr />
+<h3 id="setx-object">setx object<a class="headerlink" href="#setx-object" title="Permanent link">&para;</a></h3>
+<p>Returned by <code>setx()</code>. Contains covariate scenario specifications.</p>
+<p><strong>Methods:</strong> <code>print()</code></p>
+<hr />
+<h3 id="sim-object">sim object<a class="headerlink" href="#sim-object" title="Permanent link">&para;</a></h3>
+<p>Returned by <code>sim()</code>. Contains simulated quantities of interest.</p>
+<p><strong>Slots:</strong>
+- <code>ev</code>: Expected values
+- <code>pv</code>: Predicted values
+- <code>fd</code>: First differences (if contrast scenario specified)
+- <code>qi</code>: Quantile information</p>
+<p><strong>Methods:</strong> <code>summary()</code>, <code>plot()</code>, <code>print()</code></p>
+<hr />
+<h2 id="advanced-usage">Advanced Usage<a class="headerlink" href="#advanced-usage" title="Permanent link">&para;</a></h2>
+<h3 id="custom-variance-covariance-specifications">Custom Variance-Covariance Specifications<a class="headerlink" href="#custom-variance-covariance-specifications" title="Permanent link">&para;</a></h3>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Cluster-robust SEs</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">            </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cluster&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">state</span><span class="p">)</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="c1"># Bootstrap SEs with 1000 replicates</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;logit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">            </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bootstrap&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bootstrap_n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">)</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="c1"># HC3 heteroskedasticity-robust</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span><span class="w"> </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;HC3&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="complex-survey-designs">Complex Survey Designs<a class="headerlink" href="#complex-survey-designs" title="Permanent link">&para;</a></h3>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Two-stage cluster sample</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">outcome</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">predictor</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">survey_data</span><span class="p">,</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">            </span><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">cluster_id</span><span class="p">,</span><span class="w"> </span><span class="n">strata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">stratum</span><span class="p">,</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">            </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">sampling_weight</span><span class="p">,</span><span class="w"> </span><span class="n">nest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="c1"># Using pre-built survey design</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="nf">library</span><span class="p">(</span><span class="n">survey</span><span class="p">)</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="n">des</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">svydesign</span><span class="p">(</span><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">psu</span><span class="p">,</span><span class="w"> </span><span class="n">strata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">region</span><span class="p">,</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">wt</span><span class="p">,</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="w">                 </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">,</span><span class="w"> </span><span class="n">nest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">outcome</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">predictor</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">survey_design</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">des</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="fixed-effects-models">Fixed Effects Models<a class="headerlink" href="#fixed-effects-models" title="Permanent link">&para;</a></h3>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># Two-way fixed effects using formula syntax</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">outcome</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">controls</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">firm</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">year</span><span class="p">,</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">panel_data</span><span class="p">)</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="c1"># Alternative: fixef parameter</span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">outcome</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">controls</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="w">            </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">panel_data</span><span class="p">,</span><span class="w"> </span><span class="n">fixef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">firm</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">year</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="multiple-scenarios">Multiple Scenarios<a class="headerlink" href="#multiple-scenarios" title="Permanent link">&para;</a></h3>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Compare multiple treatment levels</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">outcome</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">treatment</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mydata</span><span class="p">)</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="c1"># Scenario 1: Control</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="n">s1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="c1"># Scenario 2: Low treatment</span>
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="n">s2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="c1"># Scenario 3: High treatment</span>
+</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">treatment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span>
+</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a><span class="n">s3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></code></pre></div>
+<hr />
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../models/">Supported Models</a> for detailed model descriptions</li>
+<li>Package vignettes for workflow tutorials</li>
+<li><code>?zelig2</code> for R help documentation</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>King, G., Tomz, M., and Wittenberg, J.</strong> (2000). "Making the Most of Statistical Analyses: Improving Interpretation and Presentation." <em>American Journal of Political Science</em>, 44(2), 347--361.</li>
+<li><strong>Imai, K., King, G., and Lau, O.</strong> (2007). "Zelig: Everyone's Statistical Software." <a href="https://github.com/IQSS/Zelig">https://github.com/IQSS/Zelig</a></li>
+<li><strong>Imai, K., King, G., and Lau, O.</strong> (2008). "Toward a Common Framework for Statistical Analysis and Development." <em>Journal of Computational and Graphical Statistics</em>, 17(4), 892--913.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/tlcaputi/zelig2" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "content.code.copy", "content.code.annotate", "toc.follow", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

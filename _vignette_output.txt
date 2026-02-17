@@ -1,0 +1,898 @@
+> #!/usr/bin/env Rscript
+> # Generate real output for zelig2 documentation vignettes
+> # Uses Census Household Pulse Survey (Week 62) data
+> 
+> devtools::load_all("/Users/theo/MIT Dropbox/Theodore Caputi/packages/zelig2/r")
+ℹ Loading zelig2
+> library(survey)
+Loading required package: grid
+Loading required package: Matrix
+Loading required package: survival
+
+Attaching package: ‘survey’
+
+The following object is masked from ‘package:graphics’:
+
+    dotchart
+
+Warning message:
+package ‘survey’ was built under R version 4.4.1 
+> 
+> # --- Load and prepare data ---------------------------------------------------
+> pulse_raw <- read.csv(
++   "~/DropboxMIT/research/census-pulse/data/week62/pulse2023_puf_62.csv"
++ )
+> 
+> cat("=== RAW DATA DIMENSIONS ===\n")
+=== RAW DATA DIMENSIONS ===
+> cat("Rows:", nrow(pulse_raw), "Cols:", ncol(pulse_raw), "\n\n")
+Rows: 72839 Cols: 247 
+
+> 
+> # Build analysis dataset
+> pulse <- data.frame(
++   # Mental health: days feeling anxious (1=not at all, 2=several, 3=more than half, 4=nearly every day)
++   anxious  = pulse_raw$ANXIOUS,
++   down     = pulse_raw$DOWN,
++   interest = pulse_raw$INTEREST,
++   worry    = pulse_raw$WORRY,
++   # Demographics
++   age      = 2023 - pulse_raw$TBIRTH_YEAR,
++   educ     = pulse_raw$EEDUC,   # 1-7 education levels
++   income   = pulse_raw$INCOME,  # 1-8 income brackets
++   # State and region
++ 
++   state    = pulse_raw$EST_ST,
++   region   = pulse_raw$REGION,
++   # Health insurance
++   has_insurance = ifelse(pulse_raw$HLTHINS1 == 1 | pulse_raw$HLTHINS2 == 1, 1L, 0L),
++   private_ins   = ifelse(pulse_raw$PRIVHLTH == 1, 1L, 0L),
++   public_ins    = ifelse(pulse_raw$PUBHLTH == 1, 1L, 0L),
++   # Food insecurity (1=enough, 2=enough but not always, 3=sometimes not enough, 4=often not enough)
++   food_insecurity = pulse_raw$CURFOODSUF,
++   # Survey weights
++   pweight  = pulse_raw$PWEIGHT,
++   # Race (1=White, 2=Black, 3=Asian, 4=Other)
++   race     = pulse_raw$RRACE,
++   hispanic = pulse_raw$RHISPANIC
++ )
+> 
+> # Recode education to meaningful levels
+> pulse$educ_cat <- factor(
++   pulse$educ,
++   levels = 1:7,
++   labels = c("Less than HS", "Some HS", "HS Diploma",
++              "Some College", "Associate's", "Bachelor's", "Graduate")
++ )
+> 
+> # Create a binary: college degree or not
+> pulse$college <- ifelse(pulse$educ >= 6, 1L, 0L)
+> 
+> # Create race category
+> pulse$race_cat <- factor(
++   pulse$race,
++   levels = 1:4,
++   labels = c("White", "Black", "Asian", "Other")
++ )
+> 
+> # Recode food insecurity as binary (sometimes/often not enough = 1)
+> pulse$food_insecure <- ifelse(pulse$food_insecurity %in% c(3, 4), 1L, 0L)
+> 
+> # Mental health: create PHQ-style score (recode 1-4 to 0-3 and sum)
+> pulse$anxiety_score <- (pulse$anxious - 1) + (pulse$worry - 1)
+> pulse$depression_score <- (pulse$interest - 1) + (pulse$down - 1)
+> pulse$mh_score <- pulse$anxiety_score + pulse$depression_score
+> 
+> # Create region factor
+> pulse$region_cat <- factor(
++   pulse$region,
++   levels = 1:4,
++   labels = c("Northeast", "South", "Midwest", "West")
++ )
+> 
+> # Create state factor
+> pulse$state_fct <- factor(pulse$state)
+> 
+> # Income as numeric (midpoints of brackets in $1000s)
+> pulse$income_k <- ifelse(pulse$income == 1, 12.5,
++                   ifelse(pulse$income == 2, 25,
++                   ifelse(pulse$income == 3, 37.5,
++                   ifelse(pulse$income == 4, 55,
++                   ifelse(pulse$income == 5, 87.5,
++                   ifelse(pulse$income == 6, 125,
++                   ifelse(pulse$income == 7, 175,
++                   ifelse(pulse$income == 8, 250, NA))))))))
+> 
+> # Drop rows with -99, -88 sentinel values and NAs
+> pulse_clean <- pulse[complete.cases(pulse[, c("mh_score", "age", "college",
++                                                 "income_k", "food_insecure",
++                                                 "has_insurance", "region_cat",
++                                                 "state_fct", "race_cat",
++                                                 "pweight")]), ]
+> pulse_clean <- pulse_clean[pulse_clean$age > 0 & pulse_clean$age < 120, ]
+> pulse_clean <- pulse_clean[pulse_clean$mh_score >= 0, ]
+> pulse_clean <- pulse_clean[pulse_clean$income_k > 0, ]
+> pulse_clean <- pulse_clean[pulse_clean$pweight > 0, ]
+> 
+> cat("=== CLEAN DATA DIMENSIONS ===\n")
+=== CLEAN DATA DIMENSIONS ===
+> cat("Rows:", nrow(pulse_clean), "Cols:", ncol(pulse_clean), "\n\n")
+Rows: 58202 Cols: 26 
+
+> cat("=== VARIABLE SUMMARIES ===\n")
+=== VARIABLE SUMMARIES ===
+> cat("mh_score:", summary(pulse_clean$mh_score), "\n")
+mh_score: 0 0 2 3.086956 5 12 
+> cat("age:", summary(pulse_clean$age), "\n")
+age: 18 40 53 52.85621 66 88 
+> cat("college:", table(pulse_clean$college), "\n")
+college: 26612 31590 
+> cat("food_insecure:", table(pulse_clean$food_insecure), "\n")
+food_insecure: 53364 4838 
+> cat("has_insurance:", table(pulse_clean$has_insurance), "\n")
+has_insurance: 13967 44235 
+> cat("region_cat:", table(pulse_clean$region_cat), "\n")
+region_cat: 8233 18821 12868 18280 
+> cat("race_cat:", table(pulse_clean$race_cat), "\n\n")
+race_cat: 48523 4106 2617 2956 
+
+> 
+> set.seed(42)
+> 
+> # ============================================================================
+> # VIGNETTE 1: OLS
+> # ============================================================================
+> cat("==============================================================\n")
+==============================================================
+> cat("VIGNETTE 1: OLS — Mental health score ~ age + college + income\n")
+VIGNETTE 1: OLS — Mental health score ~ age + college + income
+> cat("==============================================================\n\n")
+==============================================================
+
+> 
+> cat("--- Model Fitting ---\n")
+--- Model Fitting ---
+> z_ols <- zelig2(
++   mh_score ~ age + college + income_k,
++   model = "ls",
++   data = pulse_clean,
++   num = 1000L
++ )
+> print(z_ols)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+(Intercept)         age     college    income_k 
+ 7.46232840 -0.05766141 -0.53992615 -0.01049659 
+> cat("\n--- Summary ---\n")
+
+--- Summary ---
+> summary(z_ols)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error z value  Pr(>|z|)    
+(Intercept)  7.46232840  0.05248010 142.194 < 2.2e-16 ***
+age         -0.05766141  0.00084954 -67.874 < 2.2e-16 ***
+college     -0.53992615  0.02916059 -18.516 < 2.2e-16 ***
+income_k    -0.01049659  0.00019970 -52.562 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> cat("\n--- Point scenario: 40-year-old college grad, $75k income ---\n")
+
+--- Point scenario: 40-year-old college grad, $75k income ---
+> z_ols <- setx(z_ols, age = 40, college = 1, income_k = 75)
+> z_ols <- sim(z_ols)
+> summary(z_ols)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error z value  Pr(>|z|)    
+(Intercept)  7.46232840  0.05248010 142.194 < 2.2e-16 ***
+age         -0.05766141  0.00084954 -67.874 < 2.2e-16 ***
+college     -0.53992615  0.02916059 -18.516 < 2.2e-16 ***
+income_k    -0.01049659  0.00019970 -52.562 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 3.8283  SD: 0.0229  [3.7833, 3.8726]
+> 
+> cat("\n--- First Differences: college vs no college ---\n")
+
+--- First Differences: college vs no college ---
+> z_ols_fd <- zelig2(
++   mh_score ~ age + college + income_k,
++   model = "ls",
++   data = pulse_clean,
++   num = 1000L
++ )
+> z_ols_fd <- setx(z_ols_fd, age = 40, college = 0, income_k = 75)
+> z_ols_fd <- setx1(z_ols_fd, age = 40, college = 1, income_k = 75)
+> z_ols_fd <- sim(z_ols_fd)
+> summary(z_ols_fd)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error z value  Pr(>|z|)    
+(Intercept)  7.46232840  0.05248010 142.194 < 2.2e-16 ***
+age         -0.05766141  0.00084954 -67.874 < 2.2e-16 ***
+college     -0.53992615  0.02916059 -18.516 < 2.2e-16 ***
+income_k    -0.01049659  0.00019970 -52.562 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 4.3690  SD: 0.0237  [4.3236, 4.4131]
+First Differences:
+  Mean: -0.5399  SD: 0.0285  [-0.5952, -0.4857]
+> 
+> cat("\n--- Range scenario: income from $25k to $250k ---\n")
+
+--- Range scenario: income from $25k to $250k ---
+> z_ols_range <- zelig2(
++   mh_score ~ age + college + income_k,
++   model = "ls",
++   data = pulse_clean,
++   num = 1000L
++ )
+> z_ols_range <- setx(z_ols_range, age = 40, college = 1,
++                      income_k = seq(25, 250, by = 25))
+> z_ols_range <- sim(z_ols_range)
+> summary(z_ols_range)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error z value  Pr(>|z|)    
+(Intercept)  7.46232840  0.05248010 142.194 < 2.2e-16 ***
+age         -0.05766141  0.00084954 -67.874 < 2.2e-16 ***
+college     -0.53992615  0.02916059 -18.516 < 2.2e-16 ***
+income_k    -0.01049659  0.00019970 -52.562 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values (range):
+      mean     sd 2.5%.2.5% 97.5%.97.5%
+25  4.3526 0.0295    4.2942      4.4083
+50  4.0903 0.0262    4.0393      4.1396
+75  3.8279 0.0234    3.7825      3.8746
+100 3.5655 0.0215    3.5232      3.6069
+125 3.3032 0.0207    3.2629      3.3426
+150 3.0408 0.0210    2.9986      3.0820
+175 2.7784 0.0225    2.7332      2.8224
+200 2.5161 0.0249    2.4672      2.5649
+225 2.2537 0.0280    2.1966      2.3092
+250 1.9913 0.0315    1.9277      2.0519
+> 
+> cat("\n--- Robust SEs ---\n")
+
+--- Robust SEs ---
+> z_ols_robust <- zelig2(
++   mh_score ~ age + college + income_k,
++   model = "ls",
++   data = pulse_clean,
++   vcov_type = "HC1"
++ )
+> summary(z_ols_robust)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+Vcov type:  HC1 
+
+Coefficients:
+               Estimate  Std. Error z value  Pr(>|z|)    
+(Intercept)  7.46232840  0.05623047 132.710 < 2.2e-16 ***
+age         -0.05766141  0.00084374 -68.340 < 2.2e-16 ***
+college     -0.53992615  0.02966020 -18.204 < 2.2e-16 ***
+income_k    -0.01049659  0.00018864 -55.642 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # ============================================================================
+> # VIGNETTE 2: FIXED EFFECTS
+> # ============================================================================
+> cat("\n\n==============================================================\n")
+
+
+==============================================================
+> cat("VIGNETTE 2: FIXED EFFECTS — Mental health score ~ age + college | state\n")
+VIGNETTE 2: FIXED EFFECTS — Mental health score ~ age + college | state
+> cat("==============================================================\n\n")
+==============================================================
+
+> 
+> cat("--- Model Fitting ---\n")
+--- Model Fitting ---
+> z_fe <- zelig2(
++   mh_score ~ age + college + income_k | state_fct,
++   model = "ls",
++   data = pulse_clean,
++   num = 1000L
++ )
+> print(z_fe)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+Full formula:  mh_score ~ age + college + income_k | state_fct 
+N:  58202 
+Fixed effects:  state_fct 
+
+Coefficients:
+        age     college    income_k 
+-0.05798140 -0.53324388 -0.01054457 
+> cat("\n--- Summary ---\n")
+
+--- Summary ---
+> summary(z_fe)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+Full formula:  mh_score ~ age + college + income_k | state_fct 
+N:  58202 
+Fixed effects:  state_fct 
+
+Coefficients:
+            Estimate  Std. Error z value  Pr(>|z|)    
+age      -0.05798140  0.00085191 -68.061 < 2.2e-16 ***
+college  -0.53324388  0.02922396 -18.247 < 2.2e-16 ***
+income_k -0.01054457  0.00020256 -52.056 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> cat("\n--- Point scenario with state FE (California=6) ---\n")
+
+--- Point scenario with state FE (California=6) ---
+> z_fe_ca <- setx(z_fe, age = 40, college = 1, income_k = 75, state_fct = "6")
+> z_fe_ca <- sim(z_fe_ca)
+> summary(z_fe_ca)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+Full formula:  mh_score ~ age + college + income_k | state_fct 
+N:  58202 
+Fixed effects:  state_fct 
+
+Coefficients:
+            Estimate  Std. Error z value  Pr(>|z|)    
+age      -0.05798140  0.00085191 -68.061 < 2.2e-16 ***
+college  -0.53324388  0.02922396 -18.247 < 2.2e-16 ***
+income_k -0.01054457  0.00020256 -52.056 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 4.0908  SD: 0.0442  [4.0014, 4.1785]
+> 
+> cat("\n--- Point scenario averaging over states ---\n")
+
+--- Point scenario averaging over states ---
+> z_fe_avg <- setx(z_fe, age = 40, college = 1, income_k = 75)
+> z_fe_avg <- sim(z_fe_avg)
+> summary(z_fe_avg)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+Full formula:  mh_score ~ age + college + income_k | state_fct 
+N:  58202 
+Fixed effects:  state_fct 
+
+Coefficients:
+            Estimate  Std. Error z value  Pr(>|z|)    
+age      -0.05798140  0.00085191 -68.061 < 2.2e-16 ***
+college  -0.53324388  0.02922396 -18.247 < 2.2e-16 ***
+income_k -0.01054457  0.00020256 -52.056 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 3.8190  SD: 0.0457  [3.7309, 3.9043]
+> 
+> cat("\n--- First Differences with FE: college vs no college ---\n")
+
+--- First Differences with FE: college vs no college ---
+> z_fe_fd <- zelig2(
++   mh_score ~ age + college + income_k | state_fct,
++   model = "ls",
++   data = pulse_clean,
++   num = 1000L
++ )
+> z_fe_fd <- setx(z_fe_fd, age = 40, college = 0, income_k = 75)
+> z_fe_fd <- setx1(z_fe_fd, age = 40, college = 1, income_k = 75)
+> z_fe_fd <- sim(z_fe_fd)
+> summary(z_fe_fd)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+Full formula:  mh_score ~ age + college + income_k | state_fct 
+N:  58202 
+Fixed effects:  state_fct 
+
+Coefficients:
+            Estimate  Std. Error z value  Pr(>|z|)    
+age      -0.05798140  0.00085191 -68.061 < 2.2e-16 ***
+college  -0.53324388  0.02922396 -18.247 < 2.2e-16 ***
+income_k -0.01054457  0.00020256 -52.056 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 4.3484  SD: 0.0391  [4.2694, 4.4232]
+First Differences:
+  Mean: -0.5316  SD: 0.0293  [-0.5895, -0.4714]
+> 
+> cat("\n--- Cluster-robust SEs ---\n")
+
+--- Cluster-robust SEs ---
+> z_fe_cluster <- zelig2(
++   mh_score ~ age + college + income_k | state_fct,
++   model = "ls",
++   data = pulse_clean,
++   vcov_type = "cluster",
++   cluster = ~state_fct
++ )
+> summary(z_fe_cluster)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+Full formula:  mh_score ~ age + college + income_k | state_fct 
+N:  58202 
+Fixed effects:  state_fct 
+Vcov type:  cluster 
+
+Coefficients:
+            Estimate  Std. Error z value  Pr(>|z|)    
+age      -0.05798140  0.00118716 -48.840 < 2.2e-16 ***
+college  -0.53324388  0.03369631 -15.825 < 2.2e-16 ***
+income_k -0.01054457  0.00026454 -39.861 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> # ============================================================================
+> # VIGNETTE 3: LOGISTIC REGRESSION
+> # ============================================================================
+> cat("\n\n==============================================================\n")
+
+
+==============================================================
+> cat("VIGNETTE 3: LOGISTIC — Food insecurity ~ age + college + income\n")
+VIGNETTE 3: LOGISTIC — Food insecurity ~ age + college + income
+> cat("==============================================================\n\n")
+==============================================================
+
+> 
+> cat("--- Model Fitting ---\n")
+--- Model Fitting ---
+> z_logit <- zelig2(
++   food_insecure ~ age + college + income_k,
++   model = "logit",
++   data = pulse_clean,
++   num = 1000L
++ )
+> print(z_logit)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+(Intercept)         age     college    income_k 
+ 0.52286307 -0.02426752 -0.89757810 -0.02082702 
+> cat("\n--- Summary ---\n")
+
+--- Summary ---
+> summary(z_logit)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error  z value  Pr(>|z|)    
+(Intercept)  0.52286307  0.05693662   9.1832 < 2.2e-16 ***
+age         -0.02426752  0.00097111 -24.9894 < 2.2e-16 ***
+college     -0.89757810  0.03818323 -23.5071 < 2.2e-16 ***
+income_k    -0.02082702  0.00047535 -43.8138 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> cat("\n--- Point scenario: 35-year-old, no college, $50k income ---\n")
+
+--- Point scenario: 35-year-old, no college, $50k income ---
+> z_logit <- setx(z_logit, age = 35, college = 0, income_k = 50)
+> z_logit <- sim(z_logit)
+> summary(z_logit)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error  z value  Pr(>|z|)    
+(Intercept)  0.52286307  0.05693662   9.1832 < 2.2e-16 ***
+age         -0.02426752  0.00097111 -24.9894 < 2.2e-16 ***
+college     -0.89757810  0.03818323 -23.5071 < 2.2e-16 ***
+income_k    -0.02082702  0.00047535 -43.8138 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 0.2029  SD: 0.0040  [0.1952, 0.2107]
+> 
+> cat("\n--- First Differences: $50k vs $100k income ---\n")
+
+--- First Differences: $50k vs $100k income ---
+> z_logit_fd <- zelig2(
++   food_insecure ~ age + college + income_k,
++   model = "logit",
++   data = pulse_clean,
++   num = 1000L
++ )
+> z_logit_fd <- setx(z_logit_fd, age = 35, college = 0, income_k = 50)
+> z_logit_fd <- setx1(z_logit_fd, age = 35, college = 0, income_k = 100)
+> z_logit_fd <- sim(z_logit_fd)
+> summary(z_logit_fd)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error  z value  Pr(>|z|)    
+(Intercept)  0.52286307  0.05693662   9.1832 < 2.2e-16 ***
+age         -0.02426752  0.00097111 -24.9894 < 2.2e-16 ***
+college     -0.89757810  0.03818323 -23.5071 < 2.2e-16 ***
+income_k    -0.02082702  0.00047535 -43.8138 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 0.2028  SD: 0.0038  [0.1955, 0.2104]
+First Differences:
+  Mean: -0.1204  SD: 0.0026  [-0.1254, -0.1154]
+> 
+> cat("\n--- Range scenario: income from $25k to $250k ---\n")
+
+--- Range scenario: income from $25k to $250k ---
+> z_logit_range <- zelig2(
++   food_insecure ~ age + college + income_k,
++   model = "logit",
++   data = pulse_clean,
++   num = 1000L
++ )
+> z_logit_range <- setx(z_logit_range, age = 35, college = 0,
++                        income_k = seq(25, 250, by = 25))
+> z_logit_range <- sim(z_logit_range)
+> summary(z_logit_range)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+
+Coefficients:
+               Estimate  Std. Error  z value  Pr(>|z|)    
+(Intercept)  0.52286307  0.05693662   9.1832 < 2.2e-16 ***
+age         -0.02426752  0.00097111 -24.9894 < 2.2e-16 ***
+college     -0.89757810  0.03818323 -23.5071 < 2.2e-16 ***
+income_k    -0.02082702  0.00047535 -43.8138 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values (range):
+      mean     sd 2.5%.2.5% 97.5%.97.5%
+25  0.3001 0.0051    0.2901      0.3095
+50  0.2029 0.0038    0.1954      0.2103
+75  0.1313 0.0032    0.1254      0.1376
+100 0.0824 0.0027    0.0774      0.0878
+125 0.0507 0.0022    0.0465      0.0552
+150 0.0307 0.0016    0.0276      0.0342
+175 0.0185 0.0012    0.0163      0.0210
+200 0.0111 0.0008    0.0095      0.0128
+225 0.0066 0.0006    0.0056      0.0078
+250 0.0039 0.0004    0.0032      0.0048
+> 
+> # ============================================================================
+> # VIGNETTE 4: SURVEY OLS
+> # ============================================================================
+> cat("\n\n==============================================================\n")
+
+
+==============================================================
+> cat("VIGNETTE 4: SURVEY OLS — Mental health score with survey weights\n")
+VIGNETTE 4: SURVEY OLS — Mental health score with survey weights
+> cat("==============================================================\n\n")
+==============================================================
+
+> 
+> cat("--- Model Fitting ---\n")
+--- Model Fitting ---
+> z_svy_ols <- zelig2(
++   mh_score ~ age + college + income_k,
++   model = "ls",
++   data = pulse_clean,
++   weights = pulse_clean$pweight,
++   num = 1000L
++ )
+> print(z_svy_ols)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+(Intercept)         age     college    income_k 
+ 7.08844445 -0.05369919 -0.40248340 -0.01016999 
+> cat("\n--- Summary ---\n")
+
+--- Summary ---
+> summary(z_svy_ols)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+               Estimate  Std. Error  z value  Pr(>|z|)    
+(Intercept)  7.08844445  0.12424980  57.0499 < 2.2e-16 ***
+age         -0.05369919  0.00194374 -27.6267 < 2.2e-16 ***
+college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
+income_k    -0.01016999  0.00038834 -26.1883 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> cat("\n--- Comparison: unweighted vs weighted coefficients ---\n")
+
+--- Comparison: unweighted vs weighted coefficients ---
+> cat("Unweighted:\n")
+Unweighted:
+> print(coef(z_ols))
+(Intercept)         age     college    income_k 
+ 7.46232840 -0.05766141 -0.53992615 -0.01049659 
+> cat("\nWeighted:\n")
+
+Weighted:
+> print(coef(z_svy_ols))
+(Intercept)         age     college    income_k 
+ 7.08844445 -0.05369919 -0.40248340 -0.01016999 
+> 
+> cat("\n--- Point scenario: 40-year-old college grad, $75k income ---\n")
+
+--- Point scenario: 40-year-old college grad, $75k income ---
+> z_svy_ols <- setx(z_svy_ols, age = 40, college = 1, income_k = 75)
+> z_svy_ols <- sim(z_svy_ols)
+> summary(z_svy_ols)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+               Estimate  Std. Error  z value  Pr(>|z|)    
+(Intercept)  7.08844445  0.12424980  57.0499 < 2.2e-16 ***
+age         -0.05369919  0.00194374 -27.6267 < 2.2e-16 ***
+college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
+income_k    -0.01016999  0.00038834 -26.1883 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 3.7779  SD: 0.0451  [3.6871, 3.8663]
+> 
+> cat("\n--- First Differences: college vs no college ---\n")
+
+--- First Differences: college vs no college ---
+> z_svy_fd <- zelig2(
++   mh_score ~ age + college + income_k,
++   model = "ls",
++   data = pulse_clean,
++   weights = pulse_clean$pweight,
++   num = 1000L
++ )
+> z_svy_fd <- setx(z_svy_fd, age = 40, college = 0, income_k = 75)
+> z_svy_fd <- setx1(z_svy_fd, age = 40, college = 1, income_k = 75)
+> z_svy_fd <- sim(z_svy_fd)
+> summary(z_svy_fd)
+zelig2:  Least Squares (Linear Regression) 
+Formula:  mh_score ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+               Estimate  Std. Error  z value  Pr(>|z|)    
+(Intercept)  7.08844445  0.12424980  57.0499 < 2.2e-16 ***
+age         -0.05369919  0.00194374 -27.6267 < 2.2e-16 ***
+college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
+income_k    -0.01016999  0.00038834 -26.1883 < 2.2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 4.1784  SD: 0.0499  [4.0852, 4.2774]
+First Differences:
+  Mean: -0.4016  SD: 0.0539  [-0.5137, -0.3021]
+> 
+> # ============================================================================
+> # VIGNETTE 5: SURVEY LOGISTIC
+> # ============================================================================
+> cat("\n\n==============================================================\n")
+
+
+==============================================================
+> cat("VIGNETTE 5: SURVEY LOGISTIC — Food insecurity with survey weights\n")
+VIGNETTE 5: SURVEY LOGISTIC — Food insecurity with survey weights
+> cat("==============================================================\n\n")
+==============================================================
+
+> 
+> cat("--- Model Fitting ---\n")
+--- Model Fitting ---
+> z_svy_logit <- zelig2(
++   food_insecure ~ age + college + income_k,
++   model = "logit",
++   data = pulse_clean,
++   weights = pulse_clean$pweight,
++   num = 1000L
++ )
+Warning message:
+In eval(family$initialize) : non-integer #successes in a binomial glm!
+> print(z_svy_logit)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+(Intercept)         age     college    income_k 
+ 0.20445025 -0.01950071 -0.83557721 -0.01761030 
+> cat("\n--- Summary ---\n")
+
+--- Summary ---
+> summary(z_svy_logit)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+               Estimate  Std. Error  z value Pr(>|z|)    
+(Intercept)  0.20445025  0.09842872   2.0771  0.03779 *  
+age         -0.01950071  0.00158885 -12.2735  < 2e-16 ***
+college     -0.83557721  0.07313967 -11.4244  < 2e-16 ***
+income_k    -0.01761030  0.00092506 -19.0369  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+> 
+> cat("\n--- Comparison: unweighted vs weighted coefficients ---\n")
+
+--- Comparison: unweighted vs weighted coefficients ---
+> cat("Unweighted:\n")
+Unweighted:
+> print(coef(z_logit))
+(Intercept)         age     college    income_k 
+ 0.52286307 -0.02426752 -0.89757810 -0.02082702 
+> cat("\nWeighted:\n")
+
+Weighted:
+> print(coef(z_svy_logit))
+(Intercept)         age     college    income_k 
+ 0.20445025 -0.01950071 -0.83557721 -0.01761030 
+> 
+> cat("\n--- Point scenario: 35-year-old, no college, $50k income ---\n")
+
+--- Point scenario: 35-year-old, no college, $50k income ---
+> z_svy_logit <- setx(z_svy_logit, age = 35, college = 0, income_k = 50)
+> z_svy_logit <- sim(z_svy_logit)
+> summary(z_svy_logit)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+               Estimate  Std. Error  z value Pr(>|z|)    
+(Intercept)  0.20445025  0.09842872   2.0771  0.03779 *  
+age         -0.01950071  0.00158885 -12.2735  < 2e-16 ***
+college     -0.83557721  0.07313967 -11.4244  < 2e-16 ***
+income_k    -0.01761030  0.00092506 -19.0369  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 0.2044  SD: 0.0068  [0.1914, 0.2171]
+> 
+> cat("\n--- First Differences: $50k vs $100k income ---\n")
+
+--- First Differences: $50k vs $100k income ---
+> z_svy_logit_fd <- zelig2(
++   food_insecure ~ age + college + income_k,
++   model = "logit",
++   data = pulse_clean,
++   weights = pulse_clean$pweight,
++   num = 1000L
++ )
+Warning message:
+In eval(family$initialize) : non-integer #successes in a binomial glm!
+> z_svy_logit_fd <- setx(z_svy_logit_fd, age = 35, college = 0, income_k = 50)
+> z_svy_logit_fd <- setx1(z_svy_logit_fd, age = 35, college = 0, income_k = 100)
+> z_svy_logit_fd <- sim(z_svy_logit_fd)
+> summary(z_svy_logit_fd)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+               Estimate  Std. Error  z value Pr(>|z|)    
+(Intercept)  0.20445025  0.09842872   2.0771  0.03779 *  
+age         -0.01950071  0.00158885 -12.2735  < 2e-16 ***
+college     -0.83557721  0.07313967 -11.4244  < 2e-16 ***
+income_k    -0.01761030  0.00092506 -19.0369  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values:
+  Mean: 0.2045  SD: 0.0071  [0.1908, 0.2188]
+First Differences:
+  Mean: -0.1081  SD: 0.0048  [-0.1177, -0.0987]
+> 
+> cat("\n--- Range scenario: income from $25k to $250k ---\n")
+
+--- Range scenario: income from $25k to $250k ---
+> z_svy_logit_range <- zelig2(
++   food_insecure ~ age + college + income_k,
++   model = "logit",
++   data = pulse_clean,
++   weights = pulse_clean$pweight,
++   num = 1000L
++ )
+Warning message:
+In eval(family$initialize) : non-integer #successes in a binomial glm!
+> z_svy_logit_range <- setx(z_svy_logit_range, age = 35, college = 0,
++                             income_k = seq(25, 250, by = 25))
+> z_svy_logit_range <- sim(z_svy_logit_range)
+> summary(z_svy_logit_range)
+zelig2:  Logistic Regression 
+Formula:  food_insecure ~ age + college + income_k 
+N:  58202 
+Survey-weighted: yes
+
+Coefficients:
+               Estimate  Std. Error  z value Pr(>|z|)    
+(Intercept)  0.20445025  0.09842872   2.0771  0.03779 *  
+age         -0.01950071  0.00158885 -12.2735  < 2e-16 ***
+college     -0.83557721  0.07313967 -11.4244  < 2e-16 ***
+income_k    -0.01761030  0.00092506 -19.0369  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- Simulation Summary ( 1000  draws) ---
+Expected Values (range):
+      mean     sd 2.5%.2.5% 97.5%.97.5%
+25  0.2858 0.0089    0.2683      0.3031
+50  0.2047 0.0068    0.1918      0.2181
+75  0.1421 0.0062    0.1303      0.1545
+100 0.0963 0.0058    0.0850      0.1082
+125 0.0642 0.0052    0.0545      0.0748
+150 0.0424 0.0043    0.0344      0.0510
+175 0.0277 0.0035    0.0216      0.0349
+200 0.0181 0.0027    0.0134      0.0238
+225 0.0117 0.0020    0.0083      0.0161
+250 0.0076 0.0015    0.0051      0.0108
+> 
+> cat("\n\n=== ALL VIGNETTE OUTPUT COMPLETE ===\n")
+
+
+=== ALL VIGNETTE OUTPUT COMPLETE ===
+> 
