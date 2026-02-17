@@ -234,11 +234,34 @@ The original Zelig required separate model types for survey-weighted estimation 
     income_k    -0.01016999  0.00038834 -26.1883  2.69e-150 ***
     ```
 
-`zelig2` matches `survey::svyglm()` exactly. The original Zelig's `normal.survey` model produces incorrect estimates --- most strikingly, it estimates the college effect as **+0.186** (not significant) rather than the correct **-0.402** ($p < 10^{-12}$). Zelig itself warns: *"Not all features are available in Zelig Survey."*
+`zelig2` matches `survey::svyglm()` exactly. The original Zelig does not.
+
+**Root cause: double-weighting bug ([IQSS/Zelig#332](https://github.com/IQSS/Zelig/issues/332)).** Zelig's survey model class passes the weight vector to `svydesign()` (correct), but then passes it *again* to `svyglm()` via the parent class's `model.call$weights`. The final internal call is effectively:
+
+```r
+# What Zelig actually executes (incorrect):
+design <- svydesign(ids = ~1, weights = pulse$pweight, data = pulse)
+svyglm(mh_score ~ age + college + income_k,
+       design = design, weights = pulse$pweight)  # weights applied TWICE
+```
+
+We can reproduce Zelig's exact output by calling `svyglm()` with this double-weighting:
+
+```r
+# Correct (what zelig2 does):
+svyglm(formula, design = design)
+#> college = -0.40248340
+
+# Double-weighted (what Zelig does):
+svyglm(formula, design = design, weights = pulse$pweight)
+#> college = +0.18559780   # matches Zelig's output exactly
+```
+
+This confirms the discrepancy is a known Zelig bug, not a difference in methodology. Zelig itself warns: *"Not all features are available in Zelig Survey. Consider using surveyglm and setx directly."*
 
 ![Survey-weighted coefficient comparison: zelig2 matches svyglm(); Zelig does not](../assets/comparison-survey-coef.png)
 
-| Variable | `survey::svyglm()` | `zelig2` | Zelig |
+| Variable | `survey::svyglm()` | `zelig2` | Zelig (double-weighted) |
 |---|---|---|---|
 | (Intercept) | 7.08844445 | 7.08844445 | 6.78507261 |
 | age | -0.05369919 | -0.05369919 | -0.04815772 |
@@ -253,7 +276,7 @@ The expected values differ substantially: `zelig2` centers near **3.65** while Z
 
 ![Survey-weighted first differences: Zelig vs. zelig2](../assets/comparison-survey-fd.png)
 
-The first difference for college is **-0.40** in `zelig2` (matching the ground truth) but **+0.19** in Zelig --- the wrong sign entirely.
+The first difference for college is **-0.40** in `zelig2` (matching the ground truth) but **+0.19** in Zelig --- the wrong sign entirely, a consequence of the double-weighting bug.
 
 Beyond fixing the estimation, `zelig2` simplifies the API: no model type change is needed. The same `model = "ls"` works for both weighted and unweighted estimation:
 
