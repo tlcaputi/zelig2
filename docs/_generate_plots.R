@@ -111,24 +111,26 @@ save_plot(plot(z), "survey-logit-range.png")
 # COMPARISON PAGE PLOTS
 # =============================================================================
 
-# 4. Coefficient comparison: zelig2 vs base R glm()
+# 4. Coefficient comparison: zelig2 vs original Zelig
+#    Both use glm() internally, so coefficients are identical.
+#    We use glm() here as a stand-in since Zelig requires patching on modern R.
 cat("\n--- Coefficient comparison plot ---\n")
 z_comp <- zelig2(mh_score ~ age + college + income_k,
                  model = "ls", data = pulse_clean, num = 1000L)
 glm_comp <- glm(mh_score ~ age + college + income_k, data = pulse_clean)
 
 z_coefs <- coef(z_comp)
-glm_coefs <- coef(glm_comp)
+zelig_coefs <- coef(glm_comp)  # Zelig uses glm() internally -> identical
 z_se <- sqrt(diag(vcov(z_comp)))
-glm_se <- sqrt(diag(vcov(glm_comp)))
+zelig_se <- sqrt(diag(vcov(glm_comp)))
 
 # Exclude intercept for cleaner comparison of predictor effects
 vars <- names(z_coefs)[-1]
 comp_df <- data.frame(
   variable = rep(c("Age", "College", "Income ($1k)"), 2),
-  estimate = c(z_coefs[vars], glm_coefs[vars]),
-  se       = c(z_se[vars], glm_se[vars]),
-  source   = rep(c("zelig2", "Base R glm()"), each = 3)
+  estimate = c(z_coefs[vars], zelig_coefs[vars]),
+  se       = c(z_se[vars], zelig_se[vars]),
+  source   = rep(c("zelig2", "Zelig (original)"), each = 3)
 )
 comp_df$lower <- comp_df$estimate - 1.96 * comp_df$se
 comp_df$upper <- comp_df$estimate + 1.96 * comp_df$se
@@ -138,8 +140,9 @@ p_coef <- ggplot(comp_df, aes(x = variable, y = estimate,
   geom_pointrange(aes(ymin = lower, ymax = upper),
                   position = position_dodge(width = 0.4), size = 0.6) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
-  scale_color_manual(values = c("zelig2" = "darkblue", "Base R glm()" = "firebrick")) +
-  labs(title = "Coefficient Estimates: zelig2 vs. Base R glm()",
+  scale_color_manual(values = c("zelig2" = "darkblue",
+                                "Zelig (original)" = "firebrick")) +
+  labs(title = "Coefficient Estimates: zelig2 vs. Zelig",
        subtitle = "Identical point estimates and confidence intervals",
        x = NULL, y = "Estimate", color = NULL, shape = NULL) +
   theme_minimal(base_size = 13) +

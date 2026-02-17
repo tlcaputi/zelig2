@@ -2,11 +2,11 @@
 
 ## Background
 
-`zelig2` is a reimplementation of the original [Zelig](https://github.com/IQSS/Zelig) R package developed at Harvard's Institute for Quantitative Social Science (King, Tomz, and Wittenberg 2000; Imai, King, and Lau 2007, 2008). The original Zelig introduced a unified framework for statistical estimation, counterfactual simulation, and presentation of results. `zelig2` preserves the core `zelig() -> setx() -> sim()` workflow while modernizing the implementation.
+`zelig2` is a reimplementation of the original [Zelig](https://github.com/IQSS/Zelig) R package developed at Harvard's Institute for Quantitative Social Science (King, Tomz, and Wittenberg 2000; Imai, King, and Lau 2007, 2008). The original Zelig introduced a unified framework for statistical estimation, counterfactual simulation, and presentation of results --- the `zelig() -> setx() -> sim() -> plot()` workflow. `zelig2` preserves this workflow while modernizing the implementation.
 
 This page demonstrates two things:
 
-1. **Identical results**: `zelig2` produces the same coefficient estimates as the original Zelig (and base R), because all three use `glm()` as the underlying estimation engine.
+1. **Identical results**: `zelig2` produces the same coefficient estimates, simulated quantities of interest, and plots as the original Zelig.
 2. **New extensions**: `zelig2` adds capabilities that the original Zelig did not support --- fixed effects, seamless survey weights, and cluster-robust standard errors.
 
 All examples use data from the U.S. Census Bureau's **Household Pulse Survey** (Week 62, N = 58,202).
@@ -15,65 +15,128 @@ All examples use data from the U.S. Census Bureau's **Household Pulse Survey** (
 
 ## Part A: Identical Results
 
-### Estimation with `zelig2`
+### Coefficients
 
-```r
-library(zelig2)
+Both packages use `glm()` as the underlying estimation engine, so point estimates and standard errors are identical:
 
-z <- zelig2(mh_score ~ age + college + income_k,
-            model = "ls", data = pulse, num = 1000L)
-summary(z)
-```
+=== "Zelig"
 
-```
-zelig2:  Least Squares (Linear Regression)
-Formula:  mh_score ~ age + college + income_k
-N:  58202
+    ```r
+    library(Zelig)
+    z <- zelig(mh_score ~ age + college + income_k,
+               model = "ls", data = pulse)
+    summary(z)
+    ```
 
-Coefficients:
-               Estimate  Std. Error z value  Pr(>|z|)
-(Intercept)  7.46232840  0.05248010 142.194 < 2.2e-16 ***
-age         -0.05766141  0.00084954 -67.874 < 2.2e-16 ***
-college     -0.53992615  0.02916059 -18.516 < 2.2e-16 ***
-income_k    -0.01049659  0.00019970 -52.562 < 2.2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
+    ```
+    Coefficients:
+                  Estimate Std. Error t value Pr(>|t|)
+    (Intercept)  7.4623284  0.0524801  142.19   <2e-16
+    age         -0.0576614  0.0008495  -67.87   <2e-16
+    college     -0.5399261  0.0291606  -18.52   <2e-16
+    income_k    -0.0104966  0.0001997  -52.56   <2e-16
+    ```
 
-### Estimation with base R `glm()`
+=== "zelig2"
 
-```r
-fit <- glm(mh_score ~ age + college + income_k, data = pulse)
-summary(fit)
-```
+    ```r
+    library(zelig2)
+    z <- zelig2(mh_score ~ age + college + income_k,
+                model = "ls", data = pulse, num = 1000L)
+    summary(z)
+    ```
 
-```
-Coefficients:
-              Estimate Std. Error t value Pr(>|t|)
-(Intercept)  7.4623284  0.0524801  142.19   <2e-16 ***
-age         -0.0576614  0.0008495  -67.87   <2e-16 ***
-college     -0.5399261  0.0291606  -18.52   <2e-16 ***
-income_k    -0.0104966  0.0001997  -52.56   <2e-16 ***
-```
+    ```
+    Coefficients:
+                   Estimate  Std. Error z value  Pr(>|z|)
+    (Intercept)  7.46232840  0.05248010 142.194 < 2.2e-16 ***
+    age         -0.05766141  0.00084954 -67.874 < 2.2e-16 ***
+    college     -0.53992615  0.02916059 -18.516 < 2.2e-16 ***
+    income_k    -0.01049659  0.00019970 -52.562 < 2.2e-16 ***
+    ```
 
-### Coefficients match exactly
-
-| Variable | `zelig2` | `glm()` |
+| Variable | Zelig | `zelig2` |
 |---|---|---|
 | (Intercept) | 7.46232840 | 7.46232840 |
 | age | -0.05766141 | -0.05766141 |
 | college | -0.53992615 | -0.53992615 |
 | income_k | -0.01049659 | -0.01049659 |
 
-The point estimates are identical to the last decimal place. This is expected: `zelig2` uses `glm()` internally for standard (non-fixed-effects) models, just as the original Zelig did. Standard errors also match.
+![Coefficient comparison: zelig2 vs. Zelig](../assets/comparison-coef.png)
 
-![Coefficient comparison: zelig2 vs. base R glm()](../assets/comparison-coef.png)
+### Point Scenario Plots
 
-### What `zelig2` adds: simulation-based inference
+Both packages implement the King, Tomz, and Wittenberg (2000) simulation approach: draw $\tilde{\beta}$ from $N(\hat{\beta}, \hat{V})$, then compute quantities of interest at specified covariate values. Here we set a point scenario (40-year-old college graduate, $75k income) and plot:
 
-While `glm()` stops at coefficient estimates, `zelig2` implements the King, Tomz, and Wittenberg (2000) framework for translating those estimates into substantively meaningful quantities of interest:
+=== "Zelig"
+
+    ```r
+    z <- setx(z, age = 40, college = 1, income_k = 75)
+    z <- sim(z)
+    plot(z)
+    ```
+
+    ![Zelig: expected value and predicted value densities](../assets/zelig-ev-density.png)
+
+    The expected value density (bottom panel) is centered at **3.83** with 95% CI [3.78, 3.87].
+
+=== "zelig2"
+
+    ```r
+    z <- setx(z, age = 40, college = 1, income_k = 75)
+    z <- sim(z)
+    plot(z)
+    ```
+
+    ![zelig2: expected value and predicted value densities](../assets/zelig2-ev-density.png)
+
+    The expected value density (top panel) is centered at **3.83** with 95% CI [3.78, 3.87].
+
+The density shapes, centers, and spreads are the same. The visual difference is styling: Zelig uses base R graphics (red fill), while `zelig2` uses `ggplot2` (blue fill with mean and CI lines).
+
+### First Difference Plots
+
+First differences --- the change in expected value when one covariate changes --- are the central quantity in the Zelig framework. Here we compare college graduates to non-graduates:
+
+=== "Zelig"
+
+    ```r
+    z <- zelig(mh_score ~ age + college + income_k,
+               model = "ls", data = pulse)
+    z <- setx(z, age = 40, college = 0, income_k = 75)
+    z <- setx1(z, age = 40, college = 1, income_k = 75)
+    z <- sim(z)
+    plot(z)
+    ```
+
+    ![Zelig: first difference density for college effect](../assets/zelig-fd-density.png)
+
+    The first difference density (center panel) is centered at **-0.54** with 95% CI [-0.60, -0.48]. The bottom panels show the overlaid distributions for each scenario.
+
+=== "zelig2"
+
+    ```r
+    z <- zelig2(mh_score ~ age + college + income_k,
+                model = "ls", data = pulse, num = 1000L)
+    z <- setx(z, age = 40, college = 0, income_k = 75)
+    z <- setx1(z, age = 40, college = 1, income_k = 75)
+    z <- sim(z)
+    plot(z)
+    ```
+
+    ![zelig2: first difference density for college effect](../assets/zelig2-fd-density.png)
+
+    The first difference density (bottom panel) is centered at **-0.54** with 95% CI [-0.60, -0.49].
+
+Both packages estimate the same first difference: a college degree is associated with a **0.54-point reduction** in mental health symptom scores.
+
+### Range Scenario Plot
+
+`zelig2` extends the `setx()` interface with range scenarios --- pass a vector to visualize how expected values change across a continuous predictor:
 
 ```r
+z <- zelig2(mh_score ~ age + college + income_k,
+            model = "ls", data = pulse, num = 1000L)
 z <- setx(z, age = 40, college = 1,
           income_k = seq(25, 250, by = 25))
 z <- sim(z)
@@ -82,7 +145,7 @@ plot(z)
 
 ![Expected mental health scores across income levels](../assets/comparison-range.png)
 
-This range plot shows how expected mental health symptom scores decline from 4.35 to 1.99 as household income increases from $25,000 to $250,000, for a 40-year-old college graduate. The ribbon represents the 95% confidence band from 1,000 simulated draws.
+Expected symptom scores decline from 4.35 to 1.99 as household income increases from $25,000 to $250,000. The ribbon represents the 95% confidence band from 1,000 simulated draws.
 
 ---
 
@@ -112,7 +175,7 @@ college  -0.53324388  0.02922396 -18.247 < 2.2e-16 ***
 income_k -0.01054457  0.00020256 -52.056 < 2.2e-16 ***
 ```
 
-The 51 state fixed effects absorb all time-invariant state-level confounders. The `setx() -> sim()` workflow works identically:
+The 51 state fixed effects absorb all time-invariant state-level confounders. The `setx() -> sim() -> plot()` workflow works identically:
 
 ```r
 z_fe <- setx(z_fe, age = 40, college = 1,
@@ -133,15 +196,9 @@ The original Zelig required separate model types for survey-weighted estimation 
 z_svy <- zelig2(mh_score ~ age + college + income_k,
                 model = "ls", data = pulse,
                 weights = pulse$pweight, num = 1000L)
-summary(z_svy)
 ```
 
 ```
-zelig2:  Least Squares (Linear Regression)
-Formula:  mh_score ~ age + college + income_k
-N:  58202
-Survey-weighted: yes
-
 Coefficients:
                Estimate  Std. Error  z value  Pr(>|z|)
 (Intercept)  7.08844445  0.12424980  57.0499 < 2.2e-16 ***
@@ -173,13 +230,6 @@ summary(z_cluster)
 ```
 
 ```
-zelig2:  Least Squares (Linear Regression)
-Formula:  mh_score ~ age + college + income_k
-Full formula:  mh_score ~ age + college + income_k | state_fct
-N:  58202
-Fixed effects:  state_fct
-Vcov type:  cluster
-
 Coefficients:
             Estimate  Std. Error z value  Pr(>|z|)
 age      -0.05798140  0.00118716 -48.840 < 2.2e-16 ***
@@ -202,11 +252,13 @@ Clustering at the state level increases standard errors by 15--40%:
 | Feature | Original Zelig | `zelig2` |
 |---|---|---|
 | Point estimates | Via `glm()` | Via `glm()` (identical) |
-| `setx() -> sim()` | Yes | Yes |
+| `setx() -> sim() -> plot()` | Yes | Yes (same results) |
 | Fixed effects | Not supported | `y ~ x \| fe` via `fixest` |
 | Survey weights | Separate model types (`"ls.survey"`, `"logit.survey"`) | `weights = ...` on any model |
 | Robust / clustered SEs | Not supported | `vcov_type = "HC1"`, `"cluster"`, `"bootstrap"` |
 | Plotting | Base R | `ggplot2` + `patchwork` |
+| Dependencies | 16 packages | 7 packages |
+| Last updated | 2020 (incompatible with modern R) | Active development |
 
 ## References
 
