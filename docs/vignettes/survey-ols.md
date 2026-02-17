@@ -4,7 +4,10 @@
 
 Survey weights correct for differential selection probabilities and nonresponse in complex survey data. Ignoring weights can produce biased coefficient estimates and underestimated standard errors.
 
-The original [Zelig](https://github.com/IQSS/Zelig) package (Imai, King, and Lau 2007, 2008) required separate model types for survey-weighted estimation (e.g., `"ls.survey"` instead of `"ls"`). `zelig2` simplifies this: pass a numeric weight vector to `weights` and the model is automatically estimated via `survey::svyglm` (Lumley 2004). No separate model type is needed.
+The original [Zelig](https://github.com/IQSS/Zelig) package (Imai, King, and Lau 2007, 2008) required separate model types for survey-weighted estimation (e.g., `"normal.survey"` instead of `"ls"`). `zelig2` simplifies this: pass a numeric weight vector to `weights` and the model is automatically estimated via `survey::svyglm` (Lumley 2004). No separate model type is needed.
+
+!!! warning "Note on the original Zelig's survey implementation"
+    The original Zelig's survey models (`normal.survey`, `logit.survey`, etc.) contain a known double-weighting bug ([IQSS/Zelig#332](https://github.com/IQSS/Zelig/issues/332)): weights are passed to both `svydesign()` and `svyglm()`, producing incorrect coefficient estimates and standard errors. `zelig2` does not have this bug --- its estimates match `survey::svyglm()` exactly. See [Comparison with Zelig](comparison.md#2-survey-weights) for a detailed analysis.
 
 This vignette uses data from the U.S. Census Bureau's **Household Pulse Survey** (Week 62, N = 58,202), a nationally representative survey with person-level probability weights (`PWEIGHT`).
 

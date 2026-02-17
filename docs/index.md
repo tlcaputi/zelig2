@@ -32,7 +32,7 @@ Zelig (Imai, King, and Lau) was last updated in 2020 and relies on `setRefClass`
 
 | Feature | Zelig (Imai, King, and Lau) | zelig2 |
 |---|---|---|
-| Survey weights | Separate model types (`logit.survey`) | Seamless `weights =` argument |
+| Survey weights | Separate model types (`normal.survey`); [buggy](vignettes/comparison.md#2-survey-weights) | Seamless `weights =`; matches `svyglm()` exactly |
 | Fixed effects | Not supported | Built-in via `fixest` |
 | Robust SEs | Not supported | HC0--HC4, cluster, bootstrap |
 | Plotting | Base R | ggplot2 + patchwork |
