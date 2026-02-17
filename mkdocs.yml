@@ -66,6 +66,7 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Vignettes:
+    - Comparison with Zelig: vignettes/comparison.md
     - OLS Regression: vignettes/ols.md
     - Logistic Regression: vignettes/logistic-regression.md
     - Fixed Effects: vignettes/fixed-effects.md

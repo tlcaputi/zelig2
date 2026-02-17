@@ -136,7 +136,7 @@ The range scenario reveals the characteristic nonlinearity of logistic regressio
 plot(z)
 ```
 
-This produces a ribbon plot showing predicted probabilities and 95% confidence bands across the income range.
+![Predicted probability of food insecurity across income levels, with 95% confidence band](../assets/logit-range.png)
 
 !!! warning "Extrapolation"
     Ensure covariate values fall within the observed data range. Predictions far outside the data may be unreliable.

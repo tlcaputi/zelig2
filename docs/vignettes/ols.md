@@ -138,6 +138,8 @@ As household income increases from $25,000 to $250,000, expected symptom scores 
 plot(z)
 ```
 
+![Expected mental health scores across income levels, with 95% confidence band](../assets/ols-range.png)
+
 ## Robust Standard Errors
 
 When heteroskedasticity is a concern, use `vcov_type` to specify robust standard errors:

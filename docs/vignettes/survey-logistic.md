@@ -161,7 +161,7 @@ The steepest marginal reductions occur between $25k and $100k. Above $100k, the 
 plot(z_weighted)
 ```
 
-This produces a ribbon plot showing predicted probabilities and 95% confidence bands.
+![Survey-weighted predicted probability of food insecurity across income levels, with 95% confidence band](../assets/survey-logit-range.png)
 
 ## Summary
 
