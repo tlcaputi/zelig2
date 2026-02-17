@@ -545,10 +545,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#estimation-with-zelig2" class="md-nav__link">
+  <a href="#coefficients" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Estimation with zelig2
+        Coefficients
       
     </span>
   </a>
@@ -556,10 +556,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#estimation-with-base-r-glm" class="md-nav__link">
+  <a href="#point-scenario-plots" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Estimation with base R glm()
+        Point Scenario Plots
       
     </span>
   </a>
@@ -567,10 +567,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#coefficients-match-exactly" class="md-nav__link">
+  <a href="#first-difference-plots" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Coefficients match exactly
+        First Difference Plots
       
     </span>
   </a>
@@ -578,10 +578,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-zelig2-adds-simulation-based-inference" class="md-nav__link">
+  <a href="#range-scenario-plot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What zelig2 adds: simulation-based inference
+        Range Scenario Plot
       
     </span>
   </a>
@@ -988,10 +988,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#estimation-with-zelig2" class="md-nav__link">
+  <a href="#coefficients" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Estimation with zelig2
+        Coefficients
       
     </span>
   </a>
@@ -999,10 +999,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#estimation-with-base-r-glm" class="md-nav__link">
+  <a href="#point-scenario-plots" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Estimation with base R glm()
+        Point Scenario Plots
       
     </span>
   </a>
@@ -1010,10 +1010,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#coefficients-match-exactly" class="md-nav__link">
+  <a href="#first-difference-plots" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Coefficients match exactly
+        First Difference Plots
       
     </span>
   </a>
@@ -1021,10 +1021,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-zelig2-adds-simulation-based-inference" class="md-nav__link">
+  <a href="#range-scenario-plot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What zelig2 adds: simulation-based inference
+        Range Scenario Plot
       
     </span>
   </a>
@@ -1130,53 +1130,55 @@
 
 <h1 id="comparison-with-the-original-zelig">Comparison with the Original Zelig<a class="headerlink" href="#comparison-with-the-original-zelig" title="Permanent link">&para;</a></h1>
 <h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
-<p><code>zelig2</code> is a reimplementation of the original <a href="https://github.com/IQSS/Zelig">Zelig</a> R package developed at Harvard's Institute for Quantitative Social Science (King, Tomz, and Wittenberg 2000; Imai, King, and Lau 2007, 2008). The original Zelig introduced a unified framework for statistical estimation, counterfactual simulation, and presentation of results. <code>zelig2</code> preserves the core <code>zelig() -&gt; setx() -&gt; sim()</code> workflow while modernizing the implementation.</p>
+<p><code>zelig2</code> is a reimplementation of the original <a href="https://github.com/IQSS/Zelig">Zelig</a> R package developed at Harvard's Institute for Quantitative Social Science (King, Tomz, and Wittenberg 2000; Imai, King, and Lau 2007, 2008). The original Zelig introduced a unified framework for statistical estimation, counterfactual simulation, and presentation of results --- the <code>zelig() -&gt; setx() -&gt; sim() -&gt; plot()</code> workflow. <code>zelig2</code> preserves this workflow while modernizing the implementation.</p>
 <p>This page demonstrates two things:</p>
 <ol>
-<li><strong>Identical results</strong>: <code>zelig2</code> produces the same coefficient estimates as the original Zelig (and base R), because all three use <code>glm()</code> as the underlying estimation engine.</li>
+<li><strong>Identical results</strong>: <code>zelig2</code> produces the same coefficient estimates, simulated quantities of interest, and plots as the original Zelig.</li>
 <li><strong>New extensions</strong>: <code>zelig2</code> adds capabilities that the original Zelig did not support --- fixed effects, seamless survey weights, and cluster-robust standard errors.</li>
 </ol>
 <p>All examples use data from the U.S. Census Bureau's <strong>Household Pulse Survey</strong> (Week 62, N = 58,202).</p>
 <hr />
 <h2 id="part-a-identical-results">Part A: Identical Results<a class="headerlink" href="#part-a-identical-results" title="Permanent link">&para;</a></h2>
-<h3 id="estimation-with-zelig2">Estimation with <code>zelig2</code><a class="headerlink" href="#estimation-with-zelig2" title="Permanent link">&para;</a></h3>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">library</span><span class="p">(</span><span class="n">zelig2</span><span class="p">)</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<h3 id="coefficients">Coefficients<a class="headerlink" href="#coefficients" title="Permanent link">&para;</a></h3>
+<p>Both packages use <code>glm()</code> as the underlying estimation engine, so point estimates and standard errors are identical:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Zelig</label><label for="__tabbed_1_2">zelig2</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">library</span><span class="p">(</span><span class="n">Zelig</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">           </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>zelig2:  Least Squares (Linear Regression)
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Formula:  mh_score ~ age + college + income_k
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>N:  58202
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Coefficients:
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>               Estimate  Std. Error z value  Pr(&gt;|z|)
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>(Intercept)  7.46232840  0.05248010 142.194 &lt; 2.2e-16 ***
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>age         -0.05766141  0.00084954 -67.874 &lt; 2.2e-16 ***
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>college     -0.53992615  0.02916059 -18.516 &lt; 2.2e-16 ***
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>income_k    -0.01049659  0.00019970 -52.562 &lt; 2.2e-16 ***
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>---
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Coefficients:
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>              Estimate Std. Error t value Pr(&gt;|t|)
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>(Intercept)  7.4623284  0.0524801  142.19   &lt;2e-16
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>age         -0.0576614  0.0008495  -67.87   &lt;2e-16
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>college     -0.5399261  0.0291606  -18.52   &lt;2e-16
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>income_k    -0.0104966  0.0001997  -52.56   &lt;2e-16
 </span></code></pre></div>
-<h3 id="estimation-with-base-r-glm">Estimation with base R <code>glm()</code><a class="headerlink" href="#estimation-with-base-r-glm" title="Permanent link">&para;</a></h3>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">glm</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">)</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nf">summary</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+</div>
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nf">library</span><span class="p">(</span><span class="n">zelig2</span><span class="p">)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Coefficients:
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>              Estimate Std. Error t value Pr(&gt;|t|)
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>(Intercept)  7.4623284  0.0524801  142.19   &lt;2e-16 ***
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>age         -0.0576614  0.0008495  -67.87   &lt;2e-16 ***
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>college     -0.5399261  0.0291606  -18.52   &lt;2e-16 ***
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>income_k    -0.0104966  0.0001997  -52.56   &lt;2e-16 ***
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>               Estimate  Std. Error z value  Pr(&gt;|z|)
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>(Intercept)  7.46232840  0.05248010 142.194 &lt; 2.2e-16 ***
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>age         -0.05766141  0.00084954 -67.874 &lt; 2.2e-16 ***
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>college     -0.53992615  0.02916059 -18.516 &lt; 2.2e-16 ***
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>income_k    -0.01049659  0.00019970 -52.562 &lt; 2.2e-16 ***
 </span></code></pre></div>
-<h3 id="coefficients-match-exactly">Coefficients match exactly<a class="headerlink" href="#coefficients-match-exactly" title="Permanent link">&para;</a></h3>
+</div>
+</div>
+</div>
 <table>
 <thead>
 <tr>
 <th>Variable</th>
+<th>Zelig</th>
 <th><code>zelig2</code></th>
-<th><code>glm()</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1202,90 +1204,130 @@
 </tr>
 </tbody>
 </table>
-<p>The point estimates are identical to the last decimal place. This is expected: <code>zelig2</code> uses <code>glm()</code> internally for standard (non-fixed-effects) models, just as the original Zelig did. Standard errors also match.</p>
-<p><img alt="Coefficient comparison: zelig2 vs. base R glm()" src="../../assets/comparison-coef.png" /></p>
-<h3 id="what-zelig2-adds-simulation-based-inference">What <code>zelig2</code> adds: simulation-based inference<a class="headerlink" href="#what-zelig2-adds-simulation-based-inference" title="Permanent link">&para;</a></h3>
-<p>While <code>glm()</code> stops at coefficient estimates, <code>zelig2</code> implements the King, Tomz, and Wittenberg (2000) framework for translating those estimates into substantively meaningful quantities of interest:</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">          </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<p><img alt="Coefficient comparison: zelig2 vs. Zelig" src="../../assets/comparison-coef.png" /></p>
+<h3 id="point-scenario-plots">Point Scenario Plots<a class="headerlink" href="#point-scenario-plots" title="Permanent link">&para;</a></h3>
+<p>Both packages implement the King, Tomz, and Wittenberg (2000) simulation approach: draw <span class="arithmatex">\(\tilde{\beta}\)</span> from <span class="arithmatex">\(N(\hat{\beta}, \hat{V})\)</span>, then compute quantities of interest at specified covariate values. Here we set a point scenario (40-year-old college graduate, $75k income) and plot:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Zelig</label><label for="__tabbed_2_2">zelig2</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></code></pre></div>
+<p><img alt="Zelig: expected value and predicted value densities" src="../../assets/zelig-ev-density.png" /></p>
+<p>The expected value density (bottom panel) is centered at <strong>3.83</strong> with 95% CI [3.78, 3.87].</p>
+</div>
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></code></pre></div>
+<p><img alt="zelig2: expected value and predicted value densities" src="../../assets/zelig2-ev-density.png" /></p>
+<p>The expected value density (top panel) is centered at <strong>3.83</strong> with 95% CI [3.78, 3.87].</p>
+</div>
+</div>
+</div>
+<p>The density shapes, centers, and spreads are the same. The visual difference is styling: Zelig uses base R graphics (red fill), while <code>zelig2</code> uses <code>ggplot2</code> (blue fill with mean and CI lines).</p>
+<h3 id="first-difference-plots">First Difference Plots<a class="headerlink" href="#first-difference-plots" title="Permanent link">&para;</a></h3>
+<p>First differences --- the change in expected value when one covariate changes --- are the central quantity in the Zelig framework. Here we compare college graduates to non-graduates:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Zelig</label><label for="__tabbed_3_2">zelig2</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">           </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx1</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">)</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></code></pre></div>
+<p><img alt="Zelig: first difference density for college effect" src="../../assets/zelig-fd-density.png" /></p>
+<p>The first difference density (center panel) is centered at <strong>-0.54</strong> with 95% CI [-0.60, -0.48]. The bottom panels show the overlaid distributions for each scenario.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx1</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">75</span><span class="p">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></code></pre></div>
+<p><img alt="zelig2: first difference density for college effect" src="../../assets/zelig2-fd-density.png" /></p>
+<p>The first difference density (bottom panel) is centered at <strong>-0.54</strong> with 95% CI [-0.60, -0.49].</p>
+</div>
+</div>
+</div>
+<p>Both packages estimate the same first difference: a college degree is associated with a <strong>0.54-point reduction</strong> in mental health symptom scores.</p>
+<h3 id="range-scenario-plot">Range Scenario Plot<a class="headerlink" href="#range-scenario-plot" title="Permanent link">&para;</a></h3>
+<p><code>zelig2</code> extends the <code>setx()</code> interface with range scenarios --- pass a vector to visualize how expected values change across a continuous predictor:</p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">          </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </span></code></pre></div>
 <p><img alt="Expected mental health scores across income levels" src="../../assets/comparison-range.png" /></p>
-<p>This range plot shows how expected mental health symptom scores decline from 4.35 to 1.99 as household income increases from $25,000 to $250,000, for a 40-year-old college graduate. The ribbon represents the 95% confidence band from 1,000 simulated draws.</p>
+<p>Expected symptom scores decline from 4.35 to 1.99 as household income increases from $25,000 to $250,000. The ribbon represents the 95% confidence band from 1,000 simulated draws.</p>
 <hr />
 <h2 id="part-b-extensions-beyond-the-original-zelig">Part B: Extensions Beyond the Original Zelig<a class="headerlink" href="#part-b-extensions-beyond-the-original-zelig" title="Permanent link">&para;</a></h2>
 <h3 id="1-fixed-effects">1. Fixed Effects<a class="headerlink" href="#1-fixed-effects" title="Permanent link">&para;</a></h3>
 <p>The original Zelig did not support fixed effects. <code>zelig2</code> integrates the <code>fixest</code> package (Berge 2018), allowing fixed effects via <code>|</code> in the formula:</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">z_fe</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state_fct</span><span class="p">,</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">               </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z_fe</span><span class="p">)</span>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">z_fe</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state_fct</span><span class="p">,</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">               </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z_fe</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>zelig2:  Least Squares (Linear Regression)
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Formula:  mh_score ~ age + college + income_k
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>Full formula:  mh_score ~ age + college + income_k | state_fct
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>N:  58202
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Fixed effects:  state_fct
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>Coefficients:
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>            Estimate  Std. Error z value  Pr(&gt;|z|)
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>age      -0.05798140  0.00085191 -68.061 &lt; 2.2e-16 ***
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>college  -0.53324388  0.02922396 -18.247 &lt; 2.2e-16 ***
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>income_k -0.01054457  0.00020256 -52.056 &lt; 2.2e-16 ***
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>zelig2:  Least Squares (Linear Regression)
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Formula:  mh_score ~ age + college + income_k
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Full formula:  mh_score ~ age + college + income_k | state_fct
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>N:  58202
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>Fixed effects:  state_fct
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>Coefficients:
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>            Estimate  Std. Error z value  Pr(&gt;|z|)
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>age      -0.05798140  0.00085191 -68.061 &lt; 2.2e-16 ***
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>college  -0.53324388  0.02922396 -18.247 &lt; 2.2e-16 ***
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>income_k -0.01054457  0.00020256 -52.056 &lt; 2.2e-16 ***
 </span></code></pre></div>
-<p>The 51 state fixed effects absorb all time-invariant state-level confounders. The <code>setx() -&gt; sim()</code> workflow works identically:</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">z_fe</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z_fe</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">             </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">z_fe</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z_fe</span><span class="p">)</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z_fe</span><span class="p">)</span>
+<p>The 51 state fixed effects absorb all time-invariant state-level confounders. The <code>setx() -&gt; sim() -&gt; plot()</code> workflow works identically:</p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">z_fe</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z_fe</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">             </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">z_fe</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z_fe</span><span class="p">)</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z_fe</span><span class="p">)</span>
 </span></code></pre></div>
 <p><img alt="Expected values with state fixed effects" src="../../assets/fe-range.png" /></p>
 <p>The wider confidence band (compared to Part A) reflects the additional uncertainty from averaging over state-level intercepts.</p>
 <h3 id="2-survey-weights">2. Survey Weights<a class="headerlink" href="#2-survey-weights" title="Permanent link">&para;</a></h3>
 <p>The original Zelig required separate model types for survey-weighted estimation (e.g., <code>model = "ls.survey"</code> instead of <code>model = "ls"</code>). In <code>zelig2</code>, pass the weight vector directly --- no model type change needed:</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">                </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">                </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="o">$</span><span class="n">pweight</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">                </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">                </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="o">$</span><span class="n">pweight</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>zelig2:  Least Squares (Linear Regression)
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Formula:  mh_score ~ age + college + income_k
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>N:  58202
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>Survey-weighted: yes
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>Coefficients:
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>               Estimate  Std. Error  z value  Pr(&gt;|z|)
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>(Intercept)  7.08844445  0.12424980  57.0499 &lt; 2.2e-16 ***
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>age         -0.05369919  0.00194374 -27.6267 &lt; 2.2e-16 ***
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>income_k    -0.01016999  0.00038834 -26.1883 &lt; 2.2e-16 ***
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Coefficients:
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>               Estimate  Std. Error  z value  Pr(&gt;|z|)
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>(Intercept)  7.08844445  0.12424980  57.0499 &lt; 2.2e-16 ***
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>age         -0.05369919  0.00194374 -27.6267 &lt; 2.2e-16 ***
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>income_k    -0.01016999  0.00038834 -26.1883 &lt; 2.2e-16 ***
 </span></code></pre></div>
 <p>Survey weighting substantially changes the estimates --- the college effect shrinks from -0.540 to -0.402 (a 26% reduction), and standard errors approximately double to reflect the survey design.</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z_svy</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">              </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z_svy</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">              </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
 </span></code></pre></div>
 <p><img alt="Expected values with survey weights" src="../../assets/survey-range.png" /></p>
 <h3 id="3-cluster-robust-standard-errors">3. Cluster-Robust Standard Errors<a class="headerlink" href="#3-cluster-robust-standard-errors" title="Permanent link">&para;</a></h3>
 <p>The original Zelig did not support robust or clustered standard errors. <code>zelig2</code> provides HC0--HC4, cluster-robust, and bootstrap SEs via <code>vcov_type</code>:</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">z_cluster</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state_fct</span><span class="p">,</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">                    </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">                    </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cluster&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">state_fct</span><span class="p">)</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z_cluster</span><span class="p">)</span>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">z_cluster</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state_fct</span><span class="p">,</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">                    </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">                    </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cluster&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">state_fct</span><span class="p">)</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z_cluster</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>zelig2:  Least Squares (Linear Regression)
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>Formula:  mh_score ~ age + college + income_k
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Full formula:  mh_score ~ age + college + income_k | state_fct
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>N:  58202
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>Fixed effects:  state_fct
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>Vcov type:  cluster
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>Coefficients:
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>            Estimate  Std. Error z value  Pr(&gt;|z|)
-</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>age      -0.05798140  0.00118716 -48.840 &lt; 2.2e-16 ***
-</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>college  -0.53324388  0.03369631 -15.825 &lt; 2.2e-16 ***
-</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>income_k -0.01054457  0.00026454 -39.861 &lt; 2.2e-16 ***
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>Coefficients:
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>            Estimate  Std. Error z value  Pr(&gt;|z|)
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>age      -0.05798140  0.00118716 -48.840 &lt; 2.2e-16 ***
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>college  -0.53324388  0.03369631 -15.825 &lt; 2.2e-16 ***
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>income_k -0.01054457  0.00026454 -39.861 &lt; 2.2e-16 ***
 </span></code></pre></div>
 <p>Clustering at the state level increases standard errors by 15--40%:</p>
 <table>
@@ -1335,9 +1377,9 @@
 <td>Via <code>glm()</code> (identical)</td>
 </tr>
 <tr>
-<td><code>setx() -&gt; sim()</code></td>
+<td><code>setx() -&gt; sim() -&gt; plot()</code></td>
 <td>Yes</td>
-<td>Yes</td>
+<td>Yes (same results)</td>
 </tr>
 <tr>
 <td>Fixed effects</td>
@@ -1358,6 +1400,16 @@
 <td>Plotting</td>
 <td>Base R</td>
 <td><code>ggplot2</code> + <code>patchwork</code></td>
+</tr>
+<tr>
+<td>Dependencies</td>
+<td>16 packages</td>
+<td>7 packages</td>
+</tr>
+<tr>
+<td>Last updated</td>
+<td>2020 (incompatible with modern R)</td>
+<td>Active development</td>
 </tr>
 </tbody>
 </table>
