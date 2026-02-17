@@ -17,7 +17,7 @@ All examples use data from the U.S. Census Bureau's **Household Pulse Survey** (
 
 ### Coefficients
 
-Both packages use `glm()` as the underlying estimation engine, so point estimates and standard errors are identical:
+Both packages use `glm()` as the underlying estimation engine, so point estimates and standard errors match exactly:
 
 === "Zelig"
 
@@ -66,7 +66,9 @@ Both packages use `glm()` as the underlying estimation engine, so point estimate
 
 ### Point Scenario Plots
 
-Both packages implement the King, Tomz, and Wittenberg (2000) simulation approach: draw $\tilde{\beta}$ from $N(\hat{\beta}, \hat{V})$, then compute quantities of interest at specified covariate values. Here we set a point scenario (40-year-old college graduate, $75k income) and plot:
+Both packages implement the King, Tomz, and Wittenberg (2000) simulation approach: draw $\tilde{\beta}$ from $N(\hat{\beta}, \hat{V})$, then compute quantities of interest at specified covariate values. The plots below extract the raw simulation draws from each package and render them with identical formatting for direct comparison.
+
+**Scenario**: 40-year-old college graduate earning $75,000.
 
 === "Zelig"
 
@@ -76,10 +78,6 @@ Both packages implement the King, Tomz, and Wittenberg (2000) simulation approac
     plot(z)
     ```
 
-    ![Zelig: expected value and predicted value densities](../assets/zelig-ev-density.png)
-
-    The expected value density (bottom panel) is centered at **3.83** with 95% CI [3.78, 3.87].
-
 === "zelig2"
 
     ```r
@@ -88,11 +86,9 @@ Both packages implement the King, Tomz, and Wittenberg (2000) simulation approac
     plot(z)
     ```
 
-    ![zelig2: expected value and predicted value densities](../assets/zelig2-ev-density.png)
+![Expected values and predicted values: Zelig vs. zelig2](../assets/comparison-ev.png)
 
-    The expected value density (top panel) is centered at **3.83** with 95% CI [3.78, 3.87].
-
-The density shapes, centers, and spreads are the same. The visual difference is styling: Zelig uses base R graphics (red fill), while `zelig2` uses `ggplot2` (blue fill with mean and CI lines).
+The density shapes, centers, and spreads are the same in both panels. Both produce an expected value of **3.83** (95% CI: 3.78, 3.87). The minor variation in density shape reflects simulation randomness (different draws from the same distribution).
 
 ### First Difference Plots
 
@@ -101,38 +97,28 @@ First differences --- the change in expected value when one covariate changes --
 === "Zelig"
 
     ```r
-    z <- zelig(mh_score ~ age + college + income_k,
-               model = "ls", data = pulse)
     z <- setx(z, age = 40, college = 0, income_k = 75)
     z <- setx1(z, age = 40, college = 1, income_k = 75)
     z <- sim(z)
     plot(z)
     ```
-
-    ![Zelig: first difference density for college effect](../assets/zelig-fd-density.png)
-
-    The first difference density (center panel) is centered at **-0.54** with 95% CI [-0.60, -0.48]. The bottom panels show the overlaid distributions for each scenario.
 
 === "zelig2"
 
     ```r
-    z <- zelig2(mh_score ~ age + college + income_k,
-                model = "ls", data = pulse, num = 1000L)
     z <- setx(z, age = 40, college = 0, income_k = 75)
     z <- setx1(z, age = 40, college = 1, income_k = 75)
     z <- sim(z)
     plot(z)
     ```
 
-    ![zelig2: first difference density for college effect](../assets/zelig2-fd-density.png)
+![First differences: Zelig vs. zelig2](../assets/comparison-fd.png)
 
-    The first difference density (bottom panel) is centered at **-0.54** with 95% CI [-0.60, -0.49].
-
-Both packages estimate the same first difference: a college degree is associated with a **0.54-point reduction** in mental health symptom scores.
+The top row shows the two overlaid expected value distributions for each scenario (college in blue, no college in coral). The bottom row shows the first difference density. Both packages estimate a first difference of **-0.54** (95% CI: -0.60, -0.48) --- a college degree is associated with a 0.54-point reduction in mental health symptom scores.
 
 ### Range Scenario Plot
 
-`zelig2` extends the `setx()` interface with range scenarios --- pass a vector to visualize how expected values change across a continuous predictor:
+`zelig2` adds a range workflow for visualizing how expected values change across a continuous predictor:
 
 ```r
 z <- zelig2(mh_score ~ age + college + income_k,
