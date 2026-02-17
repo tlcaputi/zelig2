@@ -176,26 +176,91 @@ The wider confidence band (compared to Part A) reflects the additional uncertain
 
 ### 2. Survey Weights
 
-The original Zelig required separate model types for survey-weighted estimation (e.g., `model = "ls.survey"` instead of `model = "ls"`). In `zelig2`, pass the weight vector directly --- no model type change needed:
+The original Zelig required separate model types for survey-weighted estimation (`model = "normal.survey"` instead of `model = "ls"`). In `zelig2`, pass the weight vector directly --- no model type change needed:
+
+=== "Zelig"
+
+    ```r
+    library(Zelig)
+    z <- zelig(mh_score ~ age + college + income_k,
+               model = "normal.survey",
+               weights = ~pweight, data = pulse)
+    summary(z)
+    ```
+
+    ```
+    Coefficients:
+                  Estimate Std. Error  t value   Pr(>|t|)
+    (Intercept)  6.7850726  0.5031265  13.4858  2.188e-41
+    age         -0.0481577  0.0093694  -5.1399  2.758e-07
+    college      0.1855978  0.3436228   0.5401  5.891e-01
+    income_k    -0.0129167  0.0022622  -5.7098  1.137e-08
+    ```
+
+=== "zelig2"
+
+    ```r
+    library(zelig2)
+    z <- zelig2(mh_score ~ age + college + income_k,
+                model = "ls", data = pulse,
+                weights = pulse$pweight, num = 1000L)
+    summary(z)
+    ```
+
+    ```
+    Coefficients:
+                   Estimate  Std. Error  z value  Pr(>|z|)
+    (Intercept)  7.08844445  0.12424980  57.0499 < 2.2e-16 ***
+    age         -0.05369919  0.00194374 -27.6267 < 2.2e-16 ***
+    college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
+    income_k    -0.01016999  0.00038834 -26.1883 < 2.2e-16 ***
+    ```
+
+=== "survey::svyglm (ground truth)"
+
+    ```r
+    library(survey)
+    des <- svydesign(ids = ~1, weights = ~pweight, data = pulse)
+    fit <- svyglm(mh_score ~ age + college + income_k, design = des)
+    summary(fit)
+    ```
+
+    ```
+    Coefficients:
+                   Estimate  Std. Error  t value  Pr(>|t|)
+    (Intercept)  7.08844445  0.12424980  57.0499  0.00e+00 ***
+    age         -0.05369919  0.00194374 -27.6267  6.39e-167 ***
+    college     -0.40248340  0.05548744  -7.2536  4.11e-13 ***
+    income_k    -0.01016999  0.00038834 -26.1883  2.69e-150 ***
+    ```
+
+`zelig2` matches `survey::svyglm()` exactly. The original Zelig's `normal.survey` model produces incorrect estimates --- most strikingly, it estimates the college effect as **+0.186** (not significant) rather than the correct **-0.402** ($p < 10^{-12}$). Zelig itself warns: *"Not all features are available in Zelig Survey."*
+
+![Survey-weighted coefficient comparison: zelig2 matches svyglm(); Zelig does not](../assets/comparison-survey-coef.png)
+
+| Variable | `survey::svyglm()` | `zelig2` | Zelig |
+|---|---|---|---|
+| (Intercept) | 7.08844445 | 7.08844445 | 6.78507261 |
+| age | -0.05369919 | -0.05369919 | -0.04815772 |
+| college | -0.40248340 | -0.40248340 | +0.18559780 |
+| income_k | -0.01016999 | -0.01016999 | -0.01291669 |
+
+The simulation plots confirm the discrepancy. The panels below use identically formatted plots to compare the raw simulation draws from each package:
+
+![Survey-weighted expected values and predicted values: Zelig vs. zelig2](../assets/comparison-survey-ev.png)
+
+The expected values differ substantially: `zelig2` centers near **3.65** while Zelig centers near **3.30**, reflecting the different coefficient estimates. The `zelig2` result matches `survey::svyglm()`.
+
+![Survey-weighted first differences: Zelig vs. zelig2](../assets/comparison-survey-fd.png)
+
+The first difference for college is **-0.40** in `zelig2` (matching the ground truth) but **+0.19** in Zelig --- the wrong sign entirely.
+
+Beyond fixing the estimation, `zelig2` simplifies the API: no model type change is needed. The same `model = "ls"` works for both weighted and unweighted estimation:
 
 ```r
 z_svy <- zelig2(mh_score ~ age + college + income_k,
                 model = "ls", data = pulse,
                 weights = pulse$pweight, num = 1000L)
-```
-
-```
-Coefficients:
-               Estimate  Std. Error  z value  Pr(>|z|)
-(Intercept)  7.08844445  0.12424980  57.0499 < 2.2e-16 ***
-age         -0.05369919  0.00194374 -27.6267 < 2.2e-16 ***
-college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
-income_k    -0.01016999  0.00038834 -26.1883 < 2.2e-16 ***
-```
-
-Survey weighting substantially changes the estimates --- the college effect shrinks from -0.540 to -0.402 (a 26% reduction), and standard errors approximately double to reflect the survey design.
-
-```r
 z_svy <- setx(z_svy, age = 40, college = 1,
               income_k = seq(25, 250, by = 25))
 z_svy <- sim(z_svy)
@@ -240,7 +305,7 @@ Clustering at the state level increases standard errors by 15--40%:
 | Point estimates | Via `glm()` | Via `glm()` (identical) |
 | `setx() -> sim() -> plot()` | Yes | Yes (same results) |
 | Fixed effects | Not supported | `y ~ x \| fe` via `fixest` |
-| Survey weights | Separate model types (`"ls.survey"`, `"logit.survey"`) | `weights = ...` on any model |
+| Survey weights | Separate model types (`"normal.survey"`, `"logit.survey"`); buggy estimates | `weights = ...` on any model; matches `svyglm()` exactly |
 | Robust / clustered SEs | Not supported | `vcov_type = "HC1"`, `"cluster"`, `"bootstrap"` |
 | Plotting | Base R | `ggplot2` + `patchwork` |
 | Dependencies | 16 packages | 7 packages |
