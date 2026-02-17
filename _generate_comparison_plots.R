@@ -229,4 +229,157 @@ ggsave(file.path(out, "comparison-coef.png"), p_coef,
        width = 8, height = 4.5, dpi = 150, bg = "white")
 cat("Saved comparison-coef.png\n")
 
+# =============================================================================
+# SURVEY-WEIGHTED: COEFFICIENTS
+# =============================================================================
+cat("Survey-weighted comparison...\n")
+
+z_old_svy <- Zelig::zelig(mh_score ~ age + college + income_k,
+                           model = "normal.survey",
+                           weights = ~pweight, data = pulse_clean)
+z_new_svy <- zelig2_env$env$zelig2(mh_score ~ age + college + income_k,
+                                    model = "ls", data = pulse_clean,
+                                    weights = pulse_clean$pweight, num = 1000L)
+
+# Extract coefficients and SEs
+z_svy_coefs  <- coef(z_old_svy)
+z_svy_se     <- sqrt(diag(vcov(z_old_svy$zelig.out$z.out[[1]])))
+z2_svy_coefs <- coef(z_new_svy)
+z2_svy_se    <- sqrt(diag(vcov(z_new_svy)))
+
+cat("Survey coef comparison:\n")
+for (v in names(z2_svy_coefs)) {
+  cat(sprintf("  %-15s Zelig: %12.8f  zelig2: %12.8f  diff: %e\n",
+              v, z_svy_coefs[v], z2_svy_coefs[v],
+              z_svy_coefs[v] - z2_svy_coefs[v]))
+}
+
+svy_vars <- names(z2_svy_coefs)[-1]
+svy_comp_df <- data.frame(
+  variable = rep(c("Age", "College", "Income ($1k)"), 2),
+  estimate = c(z2_svy_coefs[svy_vars], z_svy_coefs[svy_vars]),
+  se       = c(z2_svy_se[svy_vars], z_svy_se[svy_vars]),
+  source   = rep(c(lbl_new, lbl_old), each = 3)
+)
+svy_comp_df$lower <- svy_comp_df$estimate - 1.96 * svy_comp_df$se
+svy_comp_df$upper <- svy_comp_df$estimate + 1.96 * svy_comp_df$se
+
+p_svy_coef <- ggplot(svy_comp_df, aes(x = variable, y = estimate,
+                                       color = source, shape = source)) +
+  geom_pointrange(aes(ymin = lower, ymax = upper),
+                  position = position_dodge(width = 0.4), size = 0.6) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  scale_color_manual(
+    values = setNames(c("darkblue", "firebrick"), c(lbl_new, lbl_old))
+  ) +
+  labs(title = "Survey-Weighted Coefficient Estimates",
+       subtitle = "Zelig produces incorrect estimates; zelig2 matches svyglm()",
+       x = NULL, y = "Estimate", color = NULL, shape = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "bottom")
+
+ggsave(file.path(out, "comparison-survey-coef.png"), p_svy_coef,
+       width = 8, height = 4.5, dpi = 150, bg = "white")
+cat("Saved comparison-survey-coef.png\n")
+
+# =============================================================================
+# SURVEY-WEIGHTED: POINT SCENARIO
+# =============================================================================
+cat("Survey point scenario...\n")
+
+z_old_svy <- Zelig::setx(z_old_svy, age = 40, college = 1, income_k = 75)
+set.seed(42)
+z_old_svy <- Zelig::sim(z_old_svy)
+svy_zelig_ev <- as.numeric(z_old_svy$get_qi("ev", "x"))
+svy_zelig_pv <- as.numeric(z_old_svy$get_qi("pv", "x"))
+
+z_new_svy <- zelig2_env$env$setx(z_new_svy, age = 40, college = 1, income_k = 75)
+set.seed(42)
+z_new_svy <- zelig2_env$env$sim(z_new_svy)
+svy_zelig2_ev <- as.numeric(z_new_svy$sim_out$ev)
+svy_zelig2_pv <- as.numeric(z_new_svy$sim_out$pv)
+
+svy_ev_df <- data.frame(
+  value   = c(svy_zelig_ev, svy_zelig2_ev),
+  package = factor(rep(c(lbl_old, lbl_new), each = length(svy_zelig_ev)),
+                   levels = c(lbl_old, lbl_new))
+)
+svy_pv_df <- data.frame(
+  value   = c(svy_zelig_pv, svy_zelig2_pv),
+  package = factor(rep(c(lbl_old, lbl_new), each = length(svy_zelig_pv)),
+                   levels = c(lbl_old, lbl_new))
+)
+
+p_svy_point <- make_density(svy_ev_df, "Survey-Weighted Expected Values: E(Y|X)",
+  xlim = range(c(svy_zelig_ev, svy_zelig2_ev)) + c(-0.05, 0.05)) /
+  make_density(svy_pv_df, "Survey-Weighted Predicted Values: Y|X",
+  xlim = range(c(svy_zelig_pv, svy_zelig2_pv)))
+
+ggsave(file.path(out, "comparison-survey-ev.png"), p_svy_point,
+       width = 9, height = 7, dpi = 150, bg = "white")
+cat("Saved comparison-survey-ev.png\n")
+
+# =============================================================================
+# SURVEY-WEIGHTED: FIRST DIFFERENCE
+# =============================================================================
+cat("Survey first difference...\n")
+
+z_old_svy_fd <- Zelig::zelig(mh_score ~ age + college + income_k,
+                              model = "normal.survey",
+                              weights = ~pweight, data = pulse_clean)
+z_old_svy_fd <- Zelig::setx(z_old_svy_fd, age = 40, college = 0, income_k = 75)
+z_old_svy_fd <- Zelig::setx1(z_old_svy_fd, age = 40, college = 1, income_k = 75)
+set.seed(42)
+z_old_svy_fd <- Zelig::sim(z_old_svy_fd)
+svy_zelig_fd  <- as.numeric(z_old_svy_fd$get_qi("fd", "x1"))
+svy_zelig_ev0 <- as.numeric(z_old_svy_fd$get_qi("ev", "x"))
+svy_zelig_ev1 <- as.numeric(z_old_svy_fd$get_qi("ev", "x1"))
+
+z_new_svy_fd <- zelig2_env$env$zelig2(mh_score ~ age + college + income_k,
+                                       model = "ls", data = pulse_clean,
+                                       weights = pulse_clean$pweight, num = 1000L)
+z_new_svy_fd <- zelig2_env$env$setx(z_new_svy_fd, age = 40, college = 0, income_k = 75)
+z_new_svy_fd <- zelig2_env$env$setx1(z_new_svy_fd, age = 40, college = 1, income_k = 75)
+set.seed(42)
+z_new_svy_fd <- zelig2_env$env$sim(z_new_svy_fd)
+svy_zelig2_fd  <- as.numeric(z_new_svy_fd$sim_out$fd)
+svy_zelig2_ev0 <- as.numeric(z_new_svy_fd$sim_out$ev)
+svy_zelig2_ev1 <- svy_zelig2_ev0 + svy_zelig2_fd
+
+svy_ev_overlay_df <- data.frame(
+  value    = c(svy_zelig_ev0, svy_zelig_ev1, svy_zelig2_ev0, svy_zelig2_ev1),
+  scenario = rep(c("No College (x)", "College (x1)",
+                   "No College (x)", "College (x1)"),
+                 each = length(svy_zelig_ev0)),
+  package  = factor(
+    rep(c(lbl_old, lbl_old, lbl_new, lbl_new), each = length(svy_zelig_ev0)),
+    levels = c(lbl_old, lbl_new)
+  )
+)
+
+p_svy_ev_overlay <- ggplot(svy_ev_overlay_df, aes(x = value, fill = scenario)) +
+  geom_density(alpha = 0.45, color = NA) +
+  facet_wrap(~package) +
+  scale_fill_manual(values = c("No College (x)" = "coral",
+                                "College (x1)" = "steelblue")) +
+  labs(title = "Survey-Weighted Expected Values: E(Y|X) vs. E(Y|X1)",
+       x = "Value", y = "Density", fill = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(strip.text = element_text(face = "bold", size = 11),
+        legend.position = "bottom")
+
+svy_fd_df <- data.frame(
+  value   = c(svy_zelig_fd, svy_zelig2_fd),
+  package = factor(rep(c(lbl_old, lbl_new), each = length(svy_zelig_fd)),
+                   levels = c(lbl_old, lbl_new))
+)
+p_svy_fd <- make_density(svy_fd_df,
+  "Survey-Weighted First Differences: E(Y|X1) - E(Y|X)",
+  xlim = range(c(svy_zelig_fd, svy_zelig2_fd)) + c(-0.02, 0.02))
+
+p_svy_fd_full <- p_svy_ev_overlay / p_svy_fd
+ggsave(file.path(out, "comparison-survey-fd.png"), p_svy_fd_full,
+       width = 9, height = 7, dpi = 150, bg = "white")
+cat("Saved comparison-survey-fd.png\n")
+
 cat("\n=== ALL COMPARISON PLOTS DONE ===\n")

@@ -1288,37 +1288,120 @@
 <p><img alt="Expected values with state fixed effects" src="../../assets/fe-range.png" /></p>
 <p>The wider confidence band (compared to Part A) reflects the additional uncertainty from averaging over state-level intercepts.</p>
 <h3 id="2-survey-weights">2. Survey Weights<a class="headerlink" href="#2-survey-weights" title="Permanent link">&para;</a></h3>
-<p>The original Zelig required separate model types for survey-weighted estimation (e.g., <code>model = "ls.survey"</code> instead of <code>model = "ls"</code>). In <code>zelig2</code>, pass the weight vector directly --- no model type change needed:</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">                </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">                </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="o">$</span><span class="n">pweight</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
+<p>The original Zelig required separate model types for survey-weighted estimation (<code>model = "normal.survey"</code> instead of <code>model = "ls"</code>). In <code>zelig2</code>, pass the weight vector directly --- no model type change needed:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Zelig</label><label for="__tabbed_4_2">zelig2</label><label for="__tabbed_4_3">survey::svyglm (ground truth)</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nf">library</span><span class="p">(</span><span class="n">Zelig</span><span class="p">)</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">           </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;normal.survey&quot;</span><span class="p">,</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">           </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">pweight</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">)</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Coefficients:
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>               Estimate  Std. Error  z value  Pr(&gt;|z|)
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>(Intercept)  7.08844445  0.12424980  57.0499 &lt; 2.2e-16 ***
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>age         -0.05369919  0.00194374 -27.6267 &lt; 2.2e-16 ***
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>income_k    -0.01016999  0.00038834 -26.1883 &lt; 2.2e-16 ***
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>              Estimate Std. Error  t value   Pr(&gt;|t|)
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>(Intercept)  6.7850726  0.5031265  13.4858  2.188e-41
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>age         -0.0481577  0.0093694  -5.1399  2.758e-07
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>college      0.1855978  0.3436228   0.5401  5.891e-01
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>income_k    -0.0129167  0.0022622  -5.7098  1.137e-08
 </span></code></pre></div>
-<p>Survey weighting substantially changes the estimates --- the college effect shrinks from -0.540 to -0.402 (a 26% reduction), and standard errors approximately double to reflect the survey design.</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z_svy</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">              </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
+</div>
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nf">library</span><span class="p">(</span><span class="n">zelig2</span><span class="p">)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">            </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">            </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="o">$</span><span class="n">pweight</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Coefficients:
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>               Estimate  Std. Error  z value  Pr(&gt;|z|)
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>(Intercept)  7.08844445  0.12424980  57.0499 &lt; 2.2e-16 ***
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>age         -0.05369919  0.00194374 -27.6267 &lt; 2.2e-16 ***
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>income_k    -0.01016999  0.00038834 -26.1883 &lt; 2.2e-16 ***
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-r highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nf">library</span><span class="p">(</span><span class="n">survey</span><span class="p">)</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">des</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">svydesign</span><span class="p">(</span><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">pweight</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">)</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">svyglm</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span><span class="w"> </span><span class="n">design</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">des</span><span class="p">)</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>Coefficients:
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>               Estimate  Std. Error  t value  Pr(&gt;|t|)
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>(Intercept)  7.08844445  0.12424980  57.0499  0.00e+00 ***
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>age         -0.05369919  0.00194374 -27.6267  6.39e-167 ***
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>college     -0.40248340  0.05548744  -7.2536  4.11e-13 ***
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>income_k    -0.01016999  0.00038834 -26.1883  2.69e-150 ***
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p><code>zelig2</code> matches <code>survey::svyglm()</code> exactly. The original Zelig's <code>normal.survey</code> model produces incorrect estimates --- most strikingly, it estimates the college effect as <strong>+0.186</strong> (not significant) rather than the correct <strong>-0.402</strong> (<span class="arithmatex">\(p &lt; 10^{-12}\)</span>). Zelig itself warns: <em>"Not all features are available in Zelig Survey."</em></p>
+<p><img alt="Survey-weighted coefficient comparison: zelig2 matches svyglm(); Zelig does not" src="../../assets/comparison-survey-coef.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th><code>survey::svyglm()</code></th>
+<th><code>zelig2</code></th>
+<th>Zelig</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(Intercept)</td>
+<td>7.08844445</td>
+<td>7.08844445</td>
+<td>6.78507261</td>
+</tr>
+<tr>
+<td>age</td>
+<td>-0.05369919</td>
+<td>-0.05369919</td>
+<td>-0.04815772</td>
+</tr>
+<tr>
+<td>college</td>
+<td>-0.40248340</td>
+<td>-0.40248340</td>
+<td>+0.18559780</td>
+</tr>
+<tr>
+<td>income_k</td>
+<td>-0.01016999</td>
+<td>-0.01016999</td>
+<td>-0.01291669</td>
+</tr>
+</tbody>
+</table>
+<p>The simulation plots confirm the discrepancy. The panels below use identically formatted plots to compare the raw simulation draws from each package:</p>
+<p><img alt="Survey-weighted expected values and predicted values: Zelig vs. zelig2" src="../../assets/comparison-survey-ev.png" /></p>
+<p>The expected values differ substantially: <code>zelig2</code> centers near <strong>3.65</strong> while Zelig centers near <strong>3.30</strong>, reflecting the different coefficient estimates. The <code>zelig2</code> result matches <code>survey::svyglm()</code>.</p>
+<p><img alt="Survey-weighted first differences: Zelig vs. zelig2" src="../../assets/comparison-survey-fd.png" /></p>
+<p>The first difference for college is <strong>-0.40</strong> in <code>zelig2</code> (matching the ground truth) but <strong>+0.19</strong> in Zelig --- the wrong sign entirely.</p>
+<p>Beyond fixing the estimation, <code>zelig2</code> simplifies the API: no model type change is needed. The same <code>model = "ls"</code> works for both weighted and unweighted estimation:</p>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="p">,</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">                </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">                </span><span class="n">weights</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="o">$</span><span class="n">pweight</span><span class="p">,</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000L</span><span class="p">)</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">setx</span><span class="p">(</span><span class="n">z_svy</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">              </span><span class="n">income_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">seq</span><span class="p">(</span><span class="m">25</span><span class="p">,</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">))</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="n">z_svy</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sim</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="nf">plot</span><span class="p">(</span><span class="n">z_svy</span><span class="p">)</span>
 </span></code></pre></div>
 <p><img alt="Expected values with survey weights" src="../../assets/survey-range.png" /></p>
 <h3 id="3-cluster-robust-standard-errors">3. Cluster-Robust Standard Errors<a class="headerlink" href="#3-cluster-robust-standard-errors" title="Permanent link">&para;</a></h3>
 <p>The original Zelig did not support robust or clustered standard errors. <code>zelig2</code> provides HC0--HC4, cluster-robust, and bootstrap SEs via <code>vcov_type</code>:</p>
-<div class="language-r highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">z_cluster</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state_fct</span><span class="p">,</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">                    </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">                    </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cluster&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">state_fct</span><span class="p">)</span>
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z_cluster</span><span class="p">)</span>
+<div class="language-r highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="n">z_cluster</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">zelig2</span><span class="p">(</span><span class="n">mh_score</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">college</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">income_k</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">state_fct</span><span class="p">,</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">                    </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pulse</span><span class="p">,</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">                    </span><span class="n">vcov_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cluster&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cluster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">state_fct</span><span class="p">)</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="nf">summary</span><span class="p">(</span><span class="n">z_cluster</span><span class="p">)</span>
 </span></code></pre></div>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>Coefficients:
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>            Estimate  Std. Error z value  Pr(&gt;|z|)
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>age      -0.05798140  0.00118716 -48.840 &lt; 2.2e-16 ***
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>college  -0.53324388  0.03369631 -15.825 &lt; 2.2e-16 ***
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>income_k -0.01054457  0.00026454 -39.861 &lt; 2.2e-16 ***
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>Coefficients:
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>            Estimate  Std. Error z value  Pr(&gt;|z|)
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>age      -0.05798140  0.00118716 -48.840 &lt; 2.2e-16 ***
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>college  -0.53324388  0.03369631 -15.825 &lt; 2.2e-16 ***
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>income_k -0.01054457  0.00026454 -39.861 &lt; 2.2e-16 ***
 </span></code></pre></div>
 <p>Clustering at the state level increases standard errors by 15--40%:</p>
 <table>
@@ -1379,8 +1462,8 @@
 </tr>
 <tr>
 <td>Survey weights</td>
-<td>Separate model types (<code>"ls.survey"</code>, <code>"logit.survey"</code>)</td>
-<td><code>weights = ...</code> on any model</td>
+<td>Separate model types (<code>"normal.survey"</code>, <code>"logit.survey"</code>); buggy estimates</td>
+<td><code>weights = ...</code> on any model; matches <code>svyglm()</code> exactly</td>
 </tr>
 <tr>
 <td>Robust / clustered SEs</td>
