@@ -19,24 +19,6 @@ All examples use data from the U.S. Census Bureau's **Household Pulse Survey** (
 
 Both packages use `glm()` as the underlying estimation engine, so point estimates and standard errors match exactly:
 
-=== "Zelig"
-
-    ```r
-    library(Zelig)
-    z <- zelig(mh_score ~ age + college + income_k,
-               model = "ls", data = pulse)
-    summary(z)
-    ```
-
-    ```
-    Coefficients:
-                  Estimate Std. Error t value Pr(>|t|)
-    (Intercept)  7.4623284  0.0524801  142.19   <2e-16
-    age         -0.0576614  0.0008495  -67.87   <2e-16
-    college     -0.5399261  0.0291606  -18.52   <2e-16
-    income_k    -0.0104966  0.0001997  -52.56   <2e-16
-    ```
-
 === "zelig2"
 
     ```r
@@ -55,6 +37,24 @@ Both packages use `glm()` as the underlying estimation engine, so point estimate
     income_k    -0.01049659  0.00019970 -52.562 < 2.2e-16 ***
     ```
 
+=== "Zelig"
+
+    ```r
+    library(Zelig)
+    z <- zelig(mh_score ~ age + college + income_k,
+               model = "ls", data = pulse)
+    summary(z)
+    ```
+
+    ```
+    Coefficients:
+                  Estimate Std. Error t value Pr(>|t|)
+    (Intercept)  7.4623284  0.0524801  142.19   <2e-16
+    age         -0.0576614  0.0008495  -67.87   <2e-16
+    college     -0.5399261  0.0291606  -18.52   <2e-16
+    income_k    -0.0104966  0.0001997  -52.56   <2e-16
+    ```
+
 | Variable | Zelig | `zelig2` |
 |---|---|---|
 | (Intercept) | 7.46232840 | 7.46232840 |
@@ -70,7 +70,7 @@ Both packages implement the King, Tomz, and Wittenberg (2000) simulation approac
 
 **Scenario**: 40-year-old college graduate earning $75,000.
 
-=== "Zelig"
+=== "zelig2"
 
     ```r
     z <- setx(z, age = 40, college = 1, income_k = 75)
@@ -78,7 +78,7 @@ Both packages implement the King, Tomz, and Wittenberg (2000) simulation approac
     plot(z)
     ```
 
-=== "zelig2"
+=== "Zelig"
 
     ```r
     z <- setx(z, age = 40, college = 1, income_k = 75)
@@ -94,7 +94,7 @@ The density shapes, centers, and spreads are the same in both panels. Both produ
 
 First differences --- the change in expected value when one covariate changes --- are the central quantity in the Zelig framework. Here we compare college graduates to non-graduates:
 
-=== "Zelig"
+=== "zelig2"
 
     ```r
     z <- setx(z, age = 40, college = 0, income_k = 75)
@@ -103,7 +103,7 @@ First differences --- the change in expected value when one covariate changes --
     plot(z)
     ```
 
-=== "zelig2"
+=== "Zelig"
 
     ```r
     z <- setx(z, age = 40, college = 0, income_k = 75)
@@ -178,25 +178,6 @@ The wider confidence band (compared to Part A) reflects the additional uncertain
 
 The original Zelig required separate model types for survey-weighted estimation (`model = "normal.survey"` instead of `model = "ls"`). In `zelig2`, pass the weight vector directly --- no model type change needed:
 
-=== "Zelig"
-
-    ```r
-    library(Zelig)
-    z <- zelig(mh_score ~ age + college + income_k,
-               model = "normal.survey",
-               weights = ~pweight, data = pulse)
-    summary(z)
-    ```
-
-    ```
-    Coefficients:
-                  Estimate Std. Error  t value   Pr(>|t|)
-    (Intercept)  6.7850726  0.5031265  13.4858  2.188e-41
-    age         -0.0481577  0.0093694  -5.1399  2.758e-07
-    college      0.1855978  0.3436228   0.5401  5.891e-01
-    income_k    -0.0129167  0.0022622  -5.7098  1.137e-08
-    ```
-
 === "zelig2"
 
     ```r
@@ -214,6 +195,25 @@ The original Zelig required separate model types for survey-weighted estimation 
     age         -0.05369919  0.00194374 -27.6267 < 2.2e-16 ***
     college     -0.40248340  0.05548744  -7.2536 4.059e-13 ***
     income_k    -0.01016999  0.00038834 -26.1883 < 2.2e-16 ***
+    ```
+
+=== "Zelig"
+
+    ```r
+    library(Zelig)
+    z <- zelig(mh_score ~ age + college + income_k,
+               model = "normal.survey",
+               weights = ~pweight, data = pulse)
+    summary(z)
+    ```
+
+    ```
+    Coefficients:
+                  Estimate Std. Error  t value   Pr(>|t|)
+    (Intercept)  6.7850726  0.5031265  13.4858  2.188e-41
+    age         -0.0481577  0.0093694  -5.1399  2.758e-07
+    college      0.1855978  0.3436228   0.5401  5.891e-01
+    income_k    -0.0129167  0.0022622  -5.7098  1.137e-08
     ```
 
 === "survey::svyglm (ground truth)"
