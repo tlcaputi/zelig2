@@ -1019,6 +1019,10 @@
 <h1 id="survey-weighted-logistic-regression">Survey-Weighted Logistic Regression<a class="headerlink" href="#survey-weighted-logistic-regression" title="Permanent link">&para;</a></h1>
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <p>For binary outcomes, ignoring survey weights can produce biased coefficient estimates and severely underestimated standard errors. In the original <a href="https://github.com/IQSS/Zelig">Zelig</a> package (Imai, King, and Lau 2007, 2008), survey-weighted logistic regression required specifying <code>model = "logit.survey"</code> as a separate model type. <code>zelig2</code> simplifies this: pass the weight vector to <code>weights</code> and the model is automatically estimated via <code>survey::svyglm</code> (Lumley 2004) with <code>family = binomial(link = "logit")</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Note on the original Zelig's survey implementation</p>
+<p>The original Zelig's survey models contain a known double-weighting bug (<a href="https://github.com/IQSS/Zelig/issues/332">IQSS/Zelig#332</a>) that produces incorrect estimates. <code>zelig2</code> does not have this bug --- its estimates match <code>survey::svyglm()</code> exactly. See <a href="../comparison/#2-survey-weights">Comparison with Zelig</a> for details.</p>
+</div>
 <p>This vignette uses data from the U.S. Census Bureau's <strong>Household Pulse Survey</strong> (Week 62, N = 58,202) to examine predictors of food insecurity.</p>
 <h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link">&para;</a></h2>
 <ul>
