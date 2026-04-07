@@ -4,7 +4,13 @@
 \alias{build_single_scenario}
 \title{Build a single scenario row}
 \usage{
-build_single_scenario(object, user_vals, pred_vars, default_fn)
+build_single_scenario(
+  object,
+  user_vals,
+  pred_vars,
+  default_fn,
+  factor_default = "mode"
+)
 }
 \arguments{
 \item{object}{A \code{zelig2} object.}
@@ -15,6 +21,11 @@ build_single_scenario(object, user_vals, pred_vars, default_fn)
 
 \item{default_fn}{Default function for unspecified numeric covariates
 (or \code{NULL}).}
+
+\item{factor_default}{How to set unspecified factor variables: \code{"mode"}
+uses the modal level (giving a single-category counterfactual);
+\code{"mean"} replaces the dummy columns with their column means in the
+fitted model matrix (giving a population-average counterfactual).}
 }
 \value{
 A named numeric vector (one model-matrix row).

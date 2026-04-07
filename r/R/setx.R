@@ -18,6 +18,22 @@
 #'   creates a range scenario.
 #' @param fn Optional character string naming a function (e.g., \code{"mean"})
 #'   to use as the default for unspecified numeric covariates.
+#' @param factor_default How to set unspecified \emph{factor} (or character)
+#'   covariates. \code{"mode"} (the default) sets each unspecified factor to
+#'   its modal level — i.e., the counterfactual person belongs to a single,
+#'   most-common category. \code{"mean"} replaces each unspecified factor
+#'   variable's dummy columns with their column means in the fitted model
+#'   matrix, so the counterfactual person represents the average composition
+#'   across categories rather than a single modal level. When the fit has
+#'   non-trivial observation weights (e.g., a survey-weighted \code{svyglm}
+#'   fit), the column means under \code{"mean"} are computed as
+#'   \emph{weighted} means using those weights, so the counterfactual
+#'   represents the \emph{population} the survey is designed to estimate.
+#'   For unweighted fits the means are ordinary (unweighted) column means.
+#'   The \code{"mean"} option matches the convention used by manual
+#'   implementations of King et al. (2000) simulation and is appropriate when
+#'   the desired quantity is a population-average effect rather than an
+#'   effect at the modal covariate profile.
 #'
 #' @return A new \code{zelig2} object with the scenario stored. Any previous
 #'   simulation results are cleared.
@@ -38,12 +54,18 @@
 #' # Use mean instead of median as default
 #' z <- setx(z, fn = "mean")
 #'
+#' # Use mean-of-dummies for unspecified factor covariates
+#' z <- setx(z, fn = "mean", factor_default = "mean")
+#'
 #' @export
-setx <- function(object, ..., fn = NULL) {
+setx <- function(object, ..., fn = NULL,
+                 factor_default = c("mode", "mean")) {
   if (!inherits(object, "zelig2")) {
     stop("object must be a zelig2 object.", call. = FALSE)
   }
-  scenario <- build_scenario(object, list(...), fn = fn)
+  factor_default <- match.arg(factor_default)
+  scenario <- build_scenario(object, list(...), fn = fn,
+                             factor_default = factor_default)
   new_obj <- object
   new_obj$scenario <- scenario
   new_obj$sim_out <- NULL
@@ -71,12 +93,16 @@ setx <- function(object, ..., fn = NULL) {
 #' z <- sim(z)
 #' summary(z)
 #'
+#' @inheritParams setx
 #' @export
-setx1 <- function(object, ..., fn = NULL) {
+setx1 <- function(object, ..., fn = NULL,
+                  factor_default = c("mode", "mean")) {
   if (!inherits(object, "zelig2")) {
     stop("object must be a zelig2 object.", call. = FALSE)
   }
-  scenario <- build_scenario(object, list(...), fn = fn)
+  factor_default <- match.arg(factor_default)
+  scenario <- build_scenario(object, list(...), fn = fn,
+                             factor_default = factor_default)
   new_obj <- object
   new_obj$scenario1 <- scenario
   new_obj$sim_out <- NULL
@@ -95,8 +121,12 @@ setx1 <- function(object, ..., fn = NULL) {
 #' @return A scenario list with components \code{x_matrix},
 #'   \code{user_vals}, \code{is_range}, \code{range_var},
 #'   \code{range_vals}, and \code{fe_contribution}.
+#' @param factor_default How to set unspecified factor variables: \code{"mode"}
+#'   (default) uses the modal level; \code{"mean"} replaces the variable's
+#'   dummy columns with their column means in the fitted model matrix.
 #' @keywords internal
-build_scenario <- function(object, user_vals, fn = NULL) {
+build_scenario <- function(object, user_vals, fn = NULL,
+                           factor_default = "mode") {
   data <- object$data
   formula <- object$formula
 
@@ -138,7 +168,8 @@ build_scenario <- function(object, user_vals, fn = NULL) {
     rows <- lapply(range_vals, function(rv) {
       vals <- user_vals
       vals[[range_var]] <- rv
-      build_single_scenario(object, vals, pred_vars, default_fn)
+      build_single_scenario(object, vals, pred_vars, default_fn,
+                            factor_default = factor_default)
     })
     x_matrix <- do.call(rbind, rows)
     return(list(
@@ -151,7 +182,8 @@ build_scenario <- function(object, user_vals, fn = NULL) {
     ))
   }
 
-  x_row <- build_single_scenario(object, user_vals, pred_vars, default_fn)
+  x_row <- build_single_scenario(object, user_vals, pred_vars, default_fn,
+                                 factor_default = factor_default)
   list(
     x_matrix = matrix(x_row, nrow = 1),
     user_vals = user_vals,
@@ -171,9 +203,14 @@ build_scenario <- function(object, user_vals, fn = NULL) {
 #' @param pred_vars Character vector of predictor variable names.
 #' @param default_fn Default function for unspecified numeric covariates
 #'   (or \code{NULL}).
+#' @param factor_default How to set unspecified factor variables: \code{"mode"}
+#'   uses the modal level (giving a single-category counterfactual);
+#'   \code{"mean"} replaces the dummy columns with their column means in the
+#'   fitted model matrix (giving a population-average counterfactual).
 #' @return A named numeric vector (one model-matrix row).
 #' @keywords internal
-build_single_scenario <- function(object, user_vals, pred_vars, default_fn) {
+build_single_scenario <- function(object, user_vals, pred_vars, default_fn,
+                                  factor_default = "mode") {
   data <- object$data
 
   # Intercept-only models
@@ -215,5 +252,83 @@ build_single_scenario <- function(object, user_vals, pred_vars, default_fn) {
     tt_noresp <- stats::delete.response(stats::terms(object$fit))
     mm <- stats::model.matrix(tt_noresp, data = new_df)
   }
+
+  # If factor_default == "mean", replace the dummy columns of every
+  # *unspecified* factor / character covariate with their column means in the
+  # full fitted model matrix. This gives a population-average counterfactual
+  # for those variables (rather than holding them at the mode).
+  #
+  # When the underlying fit has non-trivial observation weights (e.g., a
+  # survey-weighted svyglm fit), the column means are computed as weighted
+  # means using those weights. This makes the counterfactual covariate row
+  # represent the *population* average composition rather than the
+  # *sample* average composition. For unweighted (or constant-weight) fits,
+  # ordinary unweighted column means are used.
+  if (identical(factor_default, "mean")) {
+    full_mm <- tryCatch(
+      stats::model.matrix(object$fit),
+      error = function(e) {
+        # Fallback: rebuild from object$data using the same formula path
+        tt_full <- if (isTRUE(object$is_fixest)) {
+          stats::delete.response(stats::terms(object$formula))
+        } else {
+          stats::delete.response(stats::terms(object$fit))
+        }
+        stats::model.matrix(tt_full, data = data)
+      }
+    )
+
+    # Try to obtain prior observation weights from the fit; fall back to
+    # unweighted means if none are available or they're degenerate.
+    fit_w <- tryCatch(
+      stats::weights(object$fit, type = "prior"),
+      error = function(e) NULL
+    )
+    use_weighted <- !is.null(fit_w) &&
+      length(fit_w) == nrow(full_mm) &&
+      all(is.finite(fit_w)) &&
+      any(fit_w > 0) &&
+      stats::var(fit_w) > 0
+
+    if (use_weighted) {
+      w_sum <- sum(fit_w)
+      full_means <- as.numeric(crossprod(full_mm, fit_w)) / w_sum
+      names(full_means) <- colnames(full_mm)
+    } else {
+      full_means <- colMeans(full_mm)
+    }
+
+    unspecified <- setdiff(pred_vars, names(user_vals))
+    for (v in unspecified) {
+      # Identify columns produced by this variable. For factors,
+      # model.matrix names dummy columns by concatenating the variable name
+      # with each non-reference level (e.g., "race_f5"). For numeric
+      # variables, the column name is exactly the variable name. For
+      # interactions, columns containing ":" are skipped to avoid
+      # corrupting interaction terms involving v.
+      col_names <- colnames(mm)
+      if (is.factor(data[[v]]) || is.character(data[[v]])) {
+        owns_col <- vapply(col_names, function(cn) {
+          if (grepl(":", cn, fixed = TRUE)) return(FALSE)
+          startsWith(cn, v) &&
+            (nchar(cn) > nchar(v)) &&
+            (substr(cn, nchar(v) + 1, nchar(v) + 1) != "(")
+        }, logical(1))
+      } else {
+        # Numeric / logical: a single column with the same name as the
+        # variable. Skip if it doesn't exist (e.g., a transformed term).
+        owns_col <- col_names == v
+      }
+      idx <- which(owns_col)
+      if (length(idx) > 0) {
+        fm_idx <- match(col_names[idx], names(full_means))
+        fm_idx <- fm_idx[!is.na(fm_idx)]
+        if (length(fm_idx) == length(idx)) {
+          mm[1, idx] <- full_means[fm_idx]
+        }
+      }
+    }
+  }
+
   as.numeric(mm[1, ])
 }

@@ -4,7 +4,7 @@
 \alias{build_scenario}
 \title{Build a scenario from user inputs}
 \usage{
-build_scenario(object, user_vals, fn = NULL)
+build_scenario(object, user_vals, fn = NULL, factor_default = "mode")
 }
 \arguments{
 \item{object}{A \code{zelig2} object.}
@@ -12,6 +12,10 @@ build_scenario(object, user_vals, fn = NULL)
 \item{user_vals}{A named list of covariate values.}
 
 \item{fn}{Optional default-function name.}
+
+\item{factor_default}{How to set unspecified factor variables: \code{"mode"}
+(default) uses the modal level; \code{"mean"} replaces the variable's
+dummy columns with their column means in the fitted model matrix.}
 }
 \value{
 A scenario list with components \code{x_matrix},
