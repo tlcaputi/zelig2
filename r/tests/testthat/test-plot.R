@@ -34,6 +34,27 @@ test_that("plot works for range scenarios", {
   expect_true(inherits(p, "gg") || inherits(p, "patchwork"))
 })
 
+test_that("plot works for range scenarios over a factor", {
+  # Varying a factor across its levels used to hit as.numeric() in plot_range(),
+  # which coerced the levels to NA and produced an empty ribbon plot (with a
+  # "NAs introduced by coercion" warning). Non-numeric ranges now get a discrete
+  # axis with point ranges.
+  set.seed(11)
+  n <- 200
+  df <- data.frame(
+    y      = rnorm(n),
+    x      = rnorm(n),
+    region = factor(sample(c("North", "South", "East", "West"), n, TRUE))
+  )
+  z <- zelig2(y ~ x + region, model = "ls", data = df, num = 100L)
+  z <- setx(z, region = c("North", "South", "East", "West"))
+  z <- sim(z)
+
+  expect_warning(p <- plot(z), regexp = NA)
+  expect_true(inherits(p, "gg") || inherits(p, "patchwork"))
+  expect_false(anyNA(ggplot2::ggplot_build(p)$data[[1]]$x))
+})
+
 test_that("plot works with first differences", {
   data(mtcars)
   z <- zelig2(mpg ~ hp + wt, model = "ls", data = mtcars, num = 100L)

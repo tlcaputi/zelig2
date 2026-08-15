@@ -104,10 +104,31 @@ plot_bar <- function(vals, alpha, title = "", discrete = FALSE) {
 plot_range <- function(ev_mat, range_var, range_vals, alpha, title = "") {
   lo <- alpha / 2
   hi <- 1 - alpha / 2
-  range_vals_num <- as.numeric(range_vals)
   means <- colMeans(ev_mat, na.rm = TRUE)
   lowers <- apply(ev_mat, 2, stats::quantile, probs = lo, na.rm = TRUE)
   uppers <- apply(ev_mat, 2, stats::quantile, probs = hi, na.rm = TRUE)
+
+  # A range scenario may vary a factor or character covariate (e.g.
+  # region = c("North", "South", ...)). Coercing those levels with as.numeric()
+  # yields all-NA x values and an empty ribbon, so plot them on a discrete axis
+  # with point ranges instead. A connecting line would be meaningless there:
+  # there is nothing between "North" and "South".
+  range_vals_num <- suppressWarnings(as.numeric(range_vals))
+  if (anyNA(range_vals_num)) {
+    lvls <- as.character(range_vals)
+    df <- data.frame(x = factor(lvls, levels = unique(lvls)), mean = means,
+                     lower = lowers, upper = uppers)
+    return(
+      ggplot2::ggplot(df, ggplot2::aes(x = .data$x)) +
+        ggplot2::geom_pointrange(
+          ggplot2::aes(y = .data$mean, ymin = .data$lower,
+                       ymax = .data$upper),
+          color = "darkblue", linewidth = 0.8) +
+        ggplot2::labs(title = title, x = range_var, y = "Value") +
+        ggplot2::theme_minimal()
+    )
+  }
+
   df <- data.frame(x = range_vals_num, mean = means,
                    lower = lowers, upper = uppers)
   ggplot2::ggplot(df, ggplot2::aes(x = .data$x)) +

@@ -44,7 +44,8 @@
 #'
 #' @importFrom MASS mvrnorm glm.nb
 #' @importFrom ggplot2 ggplot aes geom_density geom_bar geom_ribbon geom_line
-#'   geom_vline labs theme_minimal scale_fill_manual scale_color_manual .data
+#'   geom_pointrange geom_vline labs theme_minimal scale_fill_manual
+#'   scale_color_manual .data
 #' @importFrom patchwork wrap_plots
 #' @importFrom sandwich vcovHC vcovCL vcovBS
 #' @importFrom survey svydesign svyglm
