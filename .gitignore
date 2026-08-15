@@ -17,3 +17,6 @@ Thumbs.db
 # Helper/scratch files
 docs/_generate_vignette_output.R
 docs/_vignette_output.txt
+
+# Local changelog (not part of the package)
+.CHANGELOG/
