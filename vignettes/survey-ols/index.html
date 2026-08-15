@@ -1155,6 +1155,10 @@
 </span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">            </span><span class="n">strata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">stratum</span><span class="p">)</span>
 </span></code></pre></div>
 <p>These arguments are passed to <code>survey::svydesign</code> internally.</p>
+<div class="admonition warning">
+<p class="admonition-title">Pick one route</p>
+<p>Use <em>either</em> a pre-built <code>survey_design</code> <em>or</em> the components (<code>weights</code>, <code>ids</code>, <code>strata</code>, <code>fpc</code>) --- passing both is an error. A design already carries its own weights and clustering, so the components cannot be applied on top of it.</p>
+</div>
 <div class="admonition tip">
 <p class="admonition-title">When to Use Survey Weights</p>
 <p>Use weights whenever your data come from a complex survey design: national surveys (NHANES, CPS, ACS), multi-stage cluster samples, stratified samples, or surveys with oversampling or differential nonresponse.</p>
