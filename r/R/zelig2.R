@@ -24,15 +24,27 @@
 #'   See \code{\link{list_models}}.
 #' @param data A data frame. Character columns are automatically converted to
 #'   factors.
-#' @param weights Optional frequency / analytic weights. Accepts a numeric
-#'   vector, a one-sided formula, or a column-name string.
+#' @param weights Optional survey / analytic weights. Accepts a numeric vector,
+#'   a one-sided formula, or a column-name string. These are the design's
+#'   probability weights: when combined with \code{ids}/\code{strata}/\code{fpc}
+#'   they are passed to \code{\link[survey]{svydesign}} as its \code{weights}
+#'   argument. They are \emph{not} a second set of weights layered on top of a
+#'   survey design --- see the note below.
 #' @param survey_design An optional \code{\link[survey]{svydesign}} object.
-#'   If supplied, a survey-weighted model is fitted.
+#'   If supplied, a survey-weighted model is fitted. A pre-built design already
+#'   carries its own weights and clustering, so supplying \code{survey_design}
+#'   together with any of \code{weights}, \code{ids}, \code{strata} or
+#'   \code{fpc} is an \strong{error} --- pass either the design or the
+#'   components, never both.
 #' @param ids Cluster IDs for automatic survey-design construction (formula
 #'   or string).
 #' @param strata Strata for survey design (formula or string).
 #' @param fpc Finite population correction (formula or string).
 #' @param nest Logical; nest clusters within strata? Default \code{FALSE}.
+#'   Set \code{TRUE} when cluster IDs are only unique \emph{within} a stratum
+#'   (common in public-use survey files, e.g. NSDUH's \code{VEREP} within
+#'   \code{VESTR}); otherwise \code{svydesign()} errors with "Clusters not
+#'   nested in strata at top level".
 #' @param fixef Optional fixed-effects specification. A one-sided formula
 #'   (e.g., \code{~ state + year}) or a character vector of variable names.
 #'   This is an alternative to including \code{|} in the main formula.
@@ -47,6 +59,22 @@
 #' @param num Integer; number of Monte Carlo simulation draws used by
 #'   \code{\link{sim}} (default 1000).
 #' @param ... Additional arguments passed to the model-fitting function.
+#'
+#' @section Specifying a survey design:
+#' There are two equivalent routes, and exactly one should be used:
+#' \preformatted{
+#' # (a) components -- zelig2 builds the svydesign for you
+#' zelig2(y ~ x, model = "logit", data = d,
+#'        weights = d$wt, ids = "psu", strata = "stratum", nest = TRUE)
+#'
+#' # (b) a pre-built design -- preferred when the design is non-trivial
+#' des <- survey::svydesign(id = ~psu, strata = ~stratum, weights = ~wt,
+#'                          data = d, nest = TRUE)
+#' zelig2(y ~ x, model = "logit", data = d, survey_design = des)
+#' }
+#' Both produce identical coefficients. Route (b) is preferred for anything
+#' beyond a simple design because the design object is then explicit,
+#' inspectable and reusable. Supplying both is an error.
 #'
 #' @return An object of class \code{"zelig2"}, a named list containing:
 #'   \describe{
