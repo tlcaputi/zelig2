@@ -17,7 +17,13 @@
 #' @param ... Named covariate values. Scalars set a point scenario; a vector
 #'   creates a range scenario.
 #' @param fn Optional character string naming a function (e.g., \code{"mean"})
-#'   to use as the default for unspecified numeric covariates.
+#'   to use as the default for unspecified numeric covariates. When
+#'   \code{fn = "mean"} and the underlying fit has non-trivial observation
+#'   weights (e.g., a survey-weighted \code{svyglm} fit), the default is
+#'   computed as a \emph{weighted} mean using those weights, so the
+#'   counterfactual represents the \emph{population} the survey is designed
+#'   to estimate. For unweighted fits, or for any \code{fn} other than
+#'   \code{"mean"}, the supplied function is applied to the raw data column.
 #' @param factor_default How to set unspecified \emph{factor} (or character)
 #'   covariates. \code{"mode"} (the default) sets each unspecified factor to
 #'   its modal level — i.e., the counterfactual person belongs to a single,
@@ -93,7 +99,6 @@ setx <- function(object, ..., fn = NULL,
 #' z <- sim(z)
 #' summary(z)
 #'
-#' @inheritParams setx
 #' @export
 setx1 <- function(object, ..., fn = NULL,
                   factor_default = c("mode", "mean")) {
@@ -118,12 +123,12 @@ setx1 <- function(object, ..., fn = NULL,
 #' @param object A \code{zelig2} object.
 #' @param user_vals A named list of covariate values.
 #' @param fn Optional default-function name.
-#' @return A scenario list with components \code{x_matrix},
-#'   \code{user_vals}, \code{is_range}, \code{range_var},
-#'   \code{range_vals}, and \code{fe_contribution}.
 #' @param factor_default How to set unspecified factor variables: \code{"mode"}
 #'   (default) uses the modal level; \code{"mean"} replaces the variable's
 #'   dummy columns with their column means in the fitted model matrix.
+#' @return A scenario list with components \code{x_matrix},
+#'   \code{user_vals}, \code{is_range}, \code{range_var},
+#'   \code{range_vals}, and \code{fe_contribution}.
 #' @keywords internal
 build_scenario <- function(object, user_vals, fn = NULL,
                            factor_default = "mode") {
@@ -150,6 +155,17 @@ build_scenario <- function(object, user_vals, fn = NULL,
 
   default_fn <- if (!is.null(fn)) match.fun(fn) else NULL
 
+  # Detect whether the user asked for "mean" specifically. We track this so
+  # that build_single_scenario can apply weighted means to numeric covariates
+  # when the underlying fit carries non-trivial observation weights. This
+  # mirrors the population-average behavior already used for factor covariates
+  # under factor_default = "mean", and avoids a sample-vs-population mismatch
+  # in the King X-row when some covariates are numeric and others are factors.
+  fn_is_mean <- !is.null(fn) && (
+    (is.character(fn) && length(fn) == 1L && fn == "mean") ||
+    (is.function(fn) && identical(fn, base::mean))
+  )
+
   # Check for range variables
   range_var <- NULL
   range_vals <- NULL
@@ -169,7 +185,8 @@ build_scenario <- function(object, user_vals, fn = NULL,
       vals <- user_vals
       vals[[range_var]] <- rv
       build_single_scenario(object, vals, pred_vars, default_fn,
-                            factor_default = factor_default)
+                            factor_default = factor_default,
+                            fn_is_mean = fn_is_mean)
     })
     x_matrix <- do.call(rbind, rows)
     return(list(
@@ -183,7 +200,8 @@ build_scenario <- function(object, user_vals, fn = NULL,
   }
 
   x_row <- build_single_scenario(object, user_vals, pred_vars, default_fn,
-                                 factor_default = factor_default)
+                                 factor_default = factor_default,
+                                 fn_is_mean = fn_is_mean)
   list(
     x_matrix = matrix(x_row, nrow = 1),
     user_vals = user_vals,
@@ -207,15 +225,42 @@ build_scenario <- function(object, user_vals, fn = NULL,
 #'   uses the modal level (giving a single-category counterfactual);
 #'   \code{"mean"} replaces the dummy columns with their column means in the
 #'   fitted model matrix (giving a population-average counterfactual).
+#' @param fn_is_mean Logical; \code{TRUE} when the caller asked for
+#'   \code{fn = "mean"}. When the fit also carries non-trivial observation
+#'   weights, defaults for unspecified \emph{numeric} covariates are computed
+#'   as weighted means rather than by applying \code{default_fn} to the raw
+#'   column.
 #' @return A named numeric vector (one model-matrix row).
 #' @keywords internal
 build_single_scenario <- function(object, user_vals, pred_vars, default_fn,
-                                  factor_default = "mode") {
+                                  factor_default = "mode",
+                                  fn_is_mean = FALSE) {
   data <- object$data
 
   # Intercept-only models
   if (length(pred_vars) == 0) {
     return(1)
+  }
+
+  # When fn = "mean" and the underlying fit has non-trivial observation
+  # weights, compute defaults for numeric covariates as weighted means using
+  # those weights. This makes the X-row a population-average covariate row
+  # consistent with the factor_default = "mean" behavior below, and matches
+  # the convention in manual implementations of King et al. (2000) on
+  # survey-weighted models.
+  numeric_w <- NULL
+  if (isTRUE(fn_is_mean)) {
+    fw_num <- tryCatch(
+      stats::weights(object$fit, type = "prior"),
+      error = function(e) NULL
+    )
+    if (!is.null(fw_num) &&
+        length(fw_num) == nrow(data) &&
+        all(is.finite(fw_num)) &&
+        any(fw_num > 0) &&
+        stats::var(fw_num) > 0) {
+      numeric_w <- fw_num
+    }
   }
 
   new_row <- list()
@@ -228,7 +273,12 @@ build_single_scenario <- function(object, user_vals, pred_vars, default_fn,
       new_row[[v]] <- val
     } else {
       if (!is.null(default_fn) && is.numeric(data[[v]])) {
-        new_row[[v]] <- default_fn(data[[v]])
+        if (!is.null(numeric_w)) {
+          new_row[[v]] <- stats::weighted.mean(data[[v]], numeric_w,
+                                               na.rm = TRUE)
+        } else {
+          new_row[[v]] <- default_fn(data[[v]])
+        }
       } else {
         new_row[[v]] <- default_val(data[[v]])
       }

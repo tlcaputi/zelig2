@@ -9,7 +9,8 @@ build_single_scenario(
   user_vals,
   pred_vars,
   default_fn,
-  factor_default = "mode"
+  factor_default = "mode",
+  fn_is_mean = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,12 @@ build_single_scenario(
 uses the modal level (giving a single-category counterfactual);
 \code{"mean"} replaces the dummy columns with their column means in the
 fitted model matrix (giving a population-average counterfactual).}
+
+\item{fn_is_mean}{Logical; \code{TRUE} when the caller asked for
+\code{fn = "mean"}. When the fit also carries non-trivial observation
+weights, defaults for unspecified \emph{numeric} covariates are computed
+as weighted means rather than by applying \code{default_fn} to the raw
+column.}
 }
 \value{
 A named numeric vector (one model-matrix row).

@@ -13,21 +13,30 @@ setx(object, ..., fn = NULL, factor_default = c("mode", "mean"))
 creates a range scenario.}
 
 \item{fn}{Optional character string naming a function (e.g., \code{"mean"})
-to use as the default for unspecified numeric covariates.}
+to use as the default for unspecified numeric covariates. When
+\code{fn = "mean"} and the underlying fit has non-trivial observation
+weights (e.g., a survey-weighted \code{svyglm} fit), the default is
+computed as a \emph{weighted} mean using those weights, so the
+counterfactual represents the \emph{population} the survey is designed
+to estimate. For unweighted fits, or for any \code{fn} other than
+\code{"mean"}, the supplied function is applied to the raw data column.}
 
 \item{factor_default}{How to set unspecified \emph{factor} (or character)
 covariates. \code{"mode"} (the default) sets each unspecified factor to
 its modal level — i.e., the counterfactual person belongs to a single,
 most-common category. \code{"mean"} replaces each unspecified factor
 variable's dummy columns with their column means in the fitted model
-matrix, so the counterfactual person represents the population's average
-composition across categories rather than a single modal level. The
-\code{"mean"} option matches the convention used by some manual
+matrix, so the counterfactual person represents the average composition
+across categories rather than a single modal level. When the fit has
+non-trivial observation weights (e.g., a survey-weighted \code{svyglm}
+fit), the column means under \code{"mean"} are computed as
+\emph{weighted} means using those weights, so the counterfactual
+represents the \emph{population} the survey is designed to estimate.
+For unweighted fits the means are ordinary (unweighted) column means.
+The \code{"mean"} option matches the convention used by manual
 implementations of King et al. (2000) simulation and is appropriate when
 the desired quantity is a population-average effect rather than an
-effect at the modal covariate profile. Note that the column means are
-unweighted; for survey-weighted analyses they correspond to sample
-proportions, not population proportions.}
+effect at the modal covariate profile.}
 }
 \value{
 A new \code{zelig2} object with the scenario stored. Any previous
