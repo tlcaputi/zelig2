@@ -146,6 +146,9 @@ z <- zelig2(mh_score ~ age + college + income_k,
 
 These arguments are passed to `survey::svydesign` internally.
 
+!!! warning "Pick one route"
+    Use *either* a pre-built `survey_design` *or* the components (`weights`, `ids`, `strata`, `fpc`) --- passing both is an error. A design already carries its own weights and clustering, so the components cannot be applied on top of it.
+
 !!! tip "When to Use Survey Weights"
     Use weights whenever your data come from a complex survey design: national surveys (NHANES, CPS, ACS), multi-stage cluster samples, stratified samples, or surveys with oversampling or differential nonresponse.
 

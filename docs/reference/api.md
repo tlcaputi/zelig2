@@ -23,12 +23,12 @@ zelig2(formula, model, data, weights = NULL, survey_design = NULL,
 | `formula` | formula | Model formula. For fixed effects, use `y ~ x1 + x2 \| fe_var` syntax |
 | `model` | character | Model type: "ls", "logit", "probit", "poisson", "negbin", "gamma", "tobit", "quantile" |
 | `data` | data.frame | Input dataset. Character columns automatically converted to factors |
-| `weights` | numeric vector, formula, or character | Survey or frequency weights. Can be vector, one-sided formula (e.g., `~weight_var`), or column name string |
+| `weights` | numeric vector, formula, or character | Survey or analytic weights. Can be vector, one-sided formula (e.g., `~weight_var`), or column name string |
 | `survey_design` | survey.design | Pre-constructed survey design object from `survey` package |
 | `ids` | formula or character | PSU/cluster identifiers for survey design (e.g., `~psu`) |
 | `strata` | formula or character | Stratification variable for survey design (e.g., `~stratum`) |
 | `fpc` | formula or character | Finite population correction for survey design |
-| `nest` | logical | Whether PSUs are nested within strata (default FALSE) |
+| `nest` | logical | Whether PSUs are nested within strata (default FALSE). Set `TRUE` when cluster IDs are only unique *within* a stratum, as in most public-use survey files |
 | `fixef` | formula or character vector | Alternative fixed effects specification. One-sided formula (e.g., `~state`) or character vector of variable names |
 | `vcov_type` | character | Variance-covariance type: "default", "robust"/"HC1", "HC0", "HC2", "HC3", "HC4", "cluster", "bootstrap" |
 | `cluster` | formula or character | Cluster variable for cluster-robust standard errors |
@@ -61,6 +61,8 @@ z5 <- zelig2(wage ~ education + experience, model = "quantile",
              data = mydata, tau = 0.75)
 ```
 
+**Specifying a survey design:** there are two routes, and exactly one should be used. Either pass the components (`weights`/`ids`/`strata`/`fpc`) and let `zelig2()` build the `svydesign` for you, or pass a pre-built `survey_design`. Supplying both is an **error**: a pre-built design already carries its own weights and clustering, so the components could not be applied, and it is ambiguous which the caller meant. The two routes give identical coefficients; the pre-built design is preferable for anything beyond a simple design because it is explicit, inspectable, and reusable.
+
 ---
 
 ### setx()
@@ -69,7 +71,7 @@ Set covariate values to define a scenario for simulation of quantities of intere
 
 **Signature:**
 ```r
-setx(object, ..., fn = NULL)
+setx(object, ..., fn = NULL, factor_default = c("mode", "mean"))
 ```
 
 **Parameters:**
@@ -79,29 +81,37 @@ setx(object, ..., fn = NULL)
 | `object` | zelig2 | Fitted zelig2 model object |
 | `...` | named arguments | Covariate values. One variable can be a vector to create range scenarios |
 | `fn` | function or character | Default function applied to unspecified numeric covariates (e.g., "mean", "median", or custom function) |
+| `factor_default` | character | How unspecified *factor* covariates are set: `"mode"` (default) uses the modal level; `"mean"` uses the column means of the variable's dummy columns |
 
-**Returns:** A `setx` object containing the specified covariate scenario. Can be passed to `sim()`.
+**Returns:** The `zelig2` object with the scenario attached (any previous simulation results are cleared), so calls chain: `z <- setx(z, ...)`.
 
 **Examples:**
 
 ```r
 # Set all covariates to their means
-x1 <- setx(z, fn = mean)
+z <- setx(z, fn = "mean")
 
 # Set specific values
-x2 <- setx(z, education = 16, age = 30)
+z <- setx(z, education = 16, age = 30)
 
 # Range scenario: vary education while holding others at mean
-x3 <- setx(z, education = 12:20, fn = mean)
+z <- setx(z, education = 12:20, fn = "mean")
 
-# Multiple factor levels
-x4 <- setx(z, region = c("North", "South", "East", "West"), fn = median)
+# Vary a factor across its levels
+z <- setx(z, region = c("North", "South", "East", "West"), fn = "median")
+
+# Population-average counterfactual: mean-of-dummies for unspecified factors
+z <- setx(z, education = 16, fn = "mean", factor_default = "mean")
 ```
 
 **Notes:**
 - For factors, must specify valid factor levels
-- Unspecified covariates use `fn` if numeric, or mode if categorical
+- Unspecified covariates use `fn` if numeric, or the sample median/mode otherwise
 - Only one variable should vary in a single `setx()` call for range plots
+
+**Modal vs. population-average scenarios.** `factor_default = "mode"` puts the counterfactual observation in a single, most-common category of every unspecified factor. `factor_default = "mean"` instead replaces each unspecified factor's dummy columns with their column means, so the scenario represents the average composition across categories --- the convention used by manual implementations of King, Tomz, and Wittenberg (2000), and the right choice when the target is a population-average effect rather than an effect at the modal covariate profile.
+
+**Weighted fits.** When the fit carries non-trivial observation weights (e.g., a survey-weighted `svyglm` fit), `fn = "mean"` computes *weighted* means for unspecified numeric covariates, and `factor_default = "mean"` computes *weighted* dummy-column means. The scenario therefore describes the population the survey is designed to estimate, not the unweighted sample. Unweighted fits, and any `fn` other than `"mean"`, are unaffected.
 
 ---
 
@@ -111,28 +121,28 @@ Set a contrast scenario for computing first differences (treatment effects).
 
 **Signature:**
 ```r
-setx1(object, ..., fn = NULL)
+setx1(object, ..., fn = NULL, factor_default = c("mode", "mean"))
 ```
 
 **Parameters:**
 
 Same as `setx()`. Used in conjunction with `setx()` to define counterfactual scenarios.
 
-**Returns:** A `setx1` object defining the contrast scenario.
+**Returns:** The `zelig2` object with the contrast scenario attached.
 
 **Examples:**
 
 ```r
 # First difference: treatment effect
-x_control <- setx(z, treatment = 0, fn = mean)
-x_treat <- setx1(z, treatment = 1)
+z <- setx(z, treatment = 0, fn = "mean")
+z <- setx1(z, treatment = 1, fn = "mean")
 
 # Before/after comparison
-x_before <- setx(z, policy = 0, year = 2010, fn = mean)
-x_after <- setx1(z, policy = 1, year = 2015)
+z <- setx(z, policy = 0, year = 2010, fn = "mean")
+z <- setx1(z, policy = 1, year = 2015, fn = "mean")
 ```
 
-**Usage:** Call `sim()` with both `setx()` and `setx1()` objects to compute first differences.
+**Usage:** Attach both scenarios, then call `sim(z)`. The first difference is `EV(setx1) - EV(setx)`.
 
 ---
 
@@ -153,7 +163,7 @@ sim(object, num = NULL, ...)
 | `num` | integer | Number of simulation draws. Overrides default from `zelig2()` call |
 | `...` | additional arguments | Additional parameters for simulation |
 
-**Returns:** A `sim` object containing simulated quantities:
+**Returns:** The `zelig2` object with simulated quantities attached in `z$sim_out`:
 - `ev`: Expected values (predictions)
 - `pv`: Predicted values (with fundamental uncertainty)
 - `fd`: First differences (if `setx1()` was specified)
@@ -164,16 +174,21 @@ sim(object, num = NULL, ...)
 # Basic prediction
 z <- zelig2(income ~ education, model = "ls", data = mydata)
 z <- setx(z, education = 16)
-s <- sim(z)
+z <- sim(z)
 
 # First differences
 z <- zelig2(employed ~ training, model = "logit", data = mydata)
-z <- setx(z, training = 0, fn = mean)
-z <- setx1(z, training = 1)
-s <- sim(z)
+z <- setx(z, training = 0, fn = "mean")
+z <- setx1(z, training = 1, fn = "mean")
+z <- sim(z)
 
 # Override number of simulations
-s <- sim(z, num = 5000)
+z <- sim(z, num = 5000)
+
+# The whole workflow chains
+z <- zelig2(income ~ education, model = "ls", data = mydata) |>
+  setx(education = 16) |>
+  sim()
 ```
 
 ---
@@ -191,7 +206,7 @@ plot(x, ..., ci = 0.95)
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `x` | sim object | Simulation results from `sim()` |
+| `x` | zelig2 | A simulated `zelig2` object (i.e., one that has been through `sim()`) |
 | `...` | additional arguments | Graphical parameters |
 | `ci` | numeric | Confidence interval level (default 0.95 for 95% CI) |
 
@@ -206,13 +221,13 @@ plot(x, ..., ci = 0.95)
 
 ```r
 # Density plot for single scenario
-plot(s)
+plot(z)
 
 # Range plot with 90% CI
-plot(s, ci = 0.90)
+plot(z, ci = 0.90)
 
 # Customize with ggplot2
-plot(s) + labs(title = "Treatment Effect Distribution") + theme_minimal()
+plot(z) + labs(title = "Treatment Effect Distribution") + theme_minimal()
 ```
 
 ---
@@ -460,17 +475,26 @@ z <- zelig2(y ~ x, model = "ls", data = mydata, vcov_type = "HC3")
 ### Complex Survey Designs
 
 ```r
-# Two-stage cluster sample
+# Two-stage cluster sample -- components, design built for you
 z <- zelig2(outcome ~ predictor, model = "ls", data = survey_data,
             ids = ~cluster_id, strata = ~stratum,
             weights = ~sampling_weight, nest = TRUE)
 
-# Using pre-built survey design
+# Using pre-built survey design (`data` is still required)
 library(survey)
 des <- svydesign(ids = ~psu, strata = ~region, weights = ~wt,
                  data = mydata, nest = TRUE)
-z <- zelig2(outcome ~ predictor, model = "ls", survey_design = des)
+z <- zelig2(outcome ~ predictor, model = "ls", data = mydata,
+            survey_design = des)
+
+# Population-average scenario on a weighted fit: fn = "mean" gives weighted
+# means for numeric covariates, factor_default = "mean" for factor dummies
+z <- setx(z, predictor = 1, fn = "mean", factor_default = "mean")
+z <- sim(z)
 ```
+
+!!! warning "One route or the other"
+    Passing `survey_design` *and* any of `weights` / `ids` / `strata` / `fpc` is an error. The design already carries its own weights and clustering, so the components cannot be applied --- earlier versions dropped them silently, which meant a caller could get results from the design's weights while believing their own had been used.
 
 ### Fixed Effects Models
 

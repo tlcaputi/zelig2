@@ -124,7 +124,9 @@ z <- zelig2(y ~ x1 + x2, model = "ls", data = mydata,
             weights = mydata$sampling_weight)
 ```
 
-For full survey design specifications, use `survey_design`, or the convenience arguments `ids`, `strata`, and `fpc`.
+For full survey design specifications, use `survey_design`, or the convenience arguments `ids`, `strata`, and `fpc` --- one route or the other, since passing a pre-built design together with any of the components is an error.
+
+On a weighted fit, `setx(z, fn = "mean")` uses *weighted* means for unspecified numeric covariates, so the scenario describes the population the survey represents rather than the unweighted sample. Add `factor_default = "mean"` to do the same for unspecified factor covariates.
 
 ## Fixed Effects
 
