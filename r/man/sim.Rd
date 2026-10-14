@@ -33,7 +33,9 @@ A new \code{zelig2} object with simulation results in
 \item{fd}{First differences (\code{ev1 - ev}), if applicable.}
 \item{rr}{Risk ratios (\code{ev1 / ev}), for binary / count models.}
 \item{num}{Number of simulation draws used.}
-\item{draws}{How parameter vectors were drawn.}
+\item{draws}{How parameter vectors were drawn: \code{"cholesky"},
+\code{"eigen"}, or \code{"eigen (fallback)"} when the
+variance-covariance matrix was not positive definite.}
 }
 }
 \description{

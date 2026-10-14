@@ -20,14 +20,20 @@ NULL
 #' The Cholesky factor is unique, so a given seed yields the same draws on any
 #' platform, and draws change only slightly when \eqn{\hat{V}}{V-hat} changes
 #' slightly. A covariance matrix that is not positive definite falls back to
-#' the eigendecomposition with a warning.
+#' \code{MASS::mvrnorm} with a warning.
 #'
-#' With \code{draws = "eigen"}, draws come from \code{MASS::mvrnorm}, which
-#' factors \eqn{\hat{V}}{V-hat} by eigendecomposition, as Zelig does. Each
-#' eigenvector's sign is arbitrary, so rounding-level differences in
+#' With \code{draws = "eigen"}, draws come from \code{MASS::mvrnorm}, as in
+#' Zelig. It multiplies standard normal draws by
+#' \eqn{Q \Lambda^{1/2}}{Q Lambda^(1/2)}, from the eigendecomposition
+#' \eqn{\hat{V} = Q \Lambda Q'}{V-hat = Q Lambda Q'}. The sign of each column of
+#' \eqn{Q}{Q} is arbitrary, so rounding-level differences in
 #' \eqn{\hat{V}}{V-hat} or a different linear-algebra library can produce an
 #' entirely different set of draws from the same seed. Both methods draw from
 #' the same distribution.
+#'
+#' The method actually used (\code{"cholesky"}, \code{"eigen"}, or
+#' \code{"eigen (fallback)"}) is stored in the \code{"draws"} attribute of the
+#' result.
 #'
 #' @param coefs Named numeric vector of estimated coefficients.
 #' @param V Variance--covariance matrix of the coefficients.
@@ -38,18 +44,28 @@ NULL
 param_fn_mvn <- function(coefs, V, num, draws = c("cholesky", "eigen")) {
   draws <- match.arg(draws)
   V <- as.matrix(V)
-  if (draws == "eigen") return(MASS::mvrnorm(n = num, mu = coefs, Sigma = V))
+  if (anyNA(V) || anyNA(coefs)) {
+    stop("Coefficients or their variance-covariance matrix contain NA ",
+         "(often an aliased coefficient); cannot draw parameters.", call. = FALSE)
+  }
+  eigen_draws <- function(method) {
+    out <- MASS::mvrnorm(n = num, mu = coefs, Sigma = V)
+    attr(out, "draws") <- method
+    out
+  }
+  if (draws == "eigen") return(eigen_draws("eigen"))
   R <- tryCatch(chol(V), error = function(e) NULL)
   if (is.null(R)) {
     warning("Variance-covariance matrix is not positive definite; drawing ",
             "parameters via eigendecomposition (MASS::mvrnorm).", call. = FALSE)
-    return(MASS::mvrnorm(n = num, mu = coefs, Sigma = V))
+    return(eigen_draws("eigen (fallback)"))
   }
   p <- length(coefs)
   Z <- matrix(stats::rnorm(num * p), nrow = num, ncol = p)
-  draws <- Z %*% R + matrix(coefs, nrow = num, ncol = p, byrow = TRUE)
-  colnames(draws) <- names(coefs)
-  draws
+  out <- Z %*% R + matrix(coefs, nrow = num, ncol = p, byrow = TRUE)
+  colnames(out) <- names(coefs)
+  attr(out, "draws") <- "cholesky"
+  out
 }
 
 #' QI function for continuous outcomes

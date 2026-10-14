@@ -30,13 +30,19 @@ Cholesky factor of \eqn{\hat{V}}{V-hat} (\eqn{R'R = \hat{V}}{R'R = V-hat}).
 The Cholesky factor is unique, so a given seed yields the same draws on any
 platform, and draws change only slightly when \eqn{\hat{V}}{V-hat} changes
 slightly. A covariance matrix that is not positive definite falls back to
-the eigendecomposition with a warning.
+\code{MASS::mvrnorm} with a warning.
 
-With \code{draws = "eigen"}, draws come from \code{MASS::mvrnorm}, which
-factors \eqn{\hat{V}}{V-hat} by eigendecomposition, as Zelig does. Each
-eigenvector's sign is arbitrary, so rounding-level differences in
+With \code{draws = "eigen"}, draws come from \code{MASS::mvrnorm}, as in
+Zelig. It multiplies standard normal draws by
+\eqn{Q \Lambda^{1/2}}{Q Lambda^(1/2)}, from the eigendecomposition
+\eqn{\hat{V} = Q \Lambda Q'}{V-hat = Q Lambda Q'}. The sign of each column of
+\eqn{Q}{Q} is arbitrary, so rounding-level differences in
 \eqn{\hat{V}}{V-hat} or a different linear-algebra library can produce an
 entirely different set of draws from the same seed. Both methods draw from
 the same distribution.
+
+The method actually used (\code{"cholesky"}, \code{"eigen"}, or
+\code{"eigen (fallback)"}) is stored in the \code{"draws"} attribute of the
+result.
 }
 \keyword{internal}

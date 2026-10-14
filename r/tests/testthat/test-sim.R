@@ -105,6 +105,8 @@ test_that("draws = \"eigen\" reproduces MASS::mvrnorm", {
   V <- matrix(c(1, 0.3, 0.1, 0.3, 2, -0.4, 0.1, -0.4, 0.5), 3)
   set.seed(4); d1 <- param_fn_mvn(coefs, V, 500, draws = "eigen")
   set.seed(4); d2 <- MASS::mvrnorm(500, coefs, V)
+  expect_identical(attr(d1, "draws"), "eigen")
+  attr(d1, "draws") <- NULL
   expect_identical(d1, d2)
   set.seed(1)
   d <- param_fn_mvn(coefs, V, 200000, draws = "eigen")
@@ -122,4 +124,17 @@ test_that("sim() passes draws through and records it", {
   set.seed(5); p <- MASS::mvrnorm(300L, z$coef, z$vcov)
   expect_equal(ze$sim_out$ev, as.numeric(plogis(p %*% c(1, 0))))
   expect_error(sim(z, draws = "svd"), "should be one of")
+})
+
+test_that("the draw method actually used is recorded, including the fallback", {
+  coefs <- c(a = 0, b = 0)
+  expect_identical(attr(param_fn_mvn(coefs, diag(2), 10), "draws"), "cholesky")
+  expect_identical(attr(param_fn_mvn(coefs, diag(2), 10, draws = "eigen"), "draws"), "eigen")
+  expect_warning(d <- param_fn_mvn(coefs, matrix(1, 2, 2), 10), "not positive definite")
+  expect_identical(attr(d, "draws"), "eigen (fallback)")
+})
+
+test_that("NA in the coefficients or covariance matrix is an error", {
+  expect_error(param_fn_mvn(c(a = 0, b = NA), diag(2), 10), "contain NA")
+  expect_error(param_fn_mvn(c(a = 0, b = 0), matrix(c(1, NA, NA, 1), 2), 10), "contain NA")
 })

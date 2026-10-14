@@ -30,7 +30,9 @@
 #'     \item{fd}{First differences (\code{ev1 - ev}), if applicable.}
 #'     \item{rr}{Risk ratios (\code{ev1 / ev}), for binary / count models.}
 #'     \item{num}{Number of simulation draws used.}
-#'     \item{draws}{How parameter vectors were drawn.}
+#'     \item{draws}{How parameter vectors were drawn: \code{"cholesky"},
+#'       \code{"eigen"}, or \code{"eigen (fallback)"} when the
+#'       variance-covariance matrix was not positive definite.}
 #'   }
 #'
 #' @seealso \code{\link{setx}}, \code{\link{plot.zelig2}},
@@ -79,7 +81,7 @@ sim <- function(object, num = NULL, draws = c("cholesky", "eigen"), ...) {
     fd  = fd,
     rr  = rr,
     num = num,
-    draws = draws,
+    draws = attr(params, "draws") %||% draws,
     scenario  = object$scenario,
     scenario1 = object$scenario1
   )
