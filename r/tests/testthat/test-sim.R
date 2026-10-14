@@ -72,3 +72,30 @@ test_that("sim EV is approximately correct for OLS", {
 
   expect_true(abs(mean(z$sim_out$ev) - 5) < 0.2)
 })
+
+test_that("parameter draws have the target mean and covariance", {
+  coefs <- c(a = 1, b = -2, c = 0.5)
+  V <- matrix(c(1, 0.3, 0.1, 0.3, 2, -0.4, 0.1, -0.4, 0.5), 3)
+  set.seed(1)
+  d <- param_fn_mvn(coefs, V, 200000)
+  expect_equal(dim(d), c(200000L, 3L))
+  expect_equal(colnames(d), names(coefs))
+  expect_equal(unname(colMeans(d)), unname(coefs), tolerance = 0.01)
+  expect_equal(unname(cov(d)), V, tolerance = 0.02)
+})
+
+test_that("parameter draws are stable to rounding-level changes in V", {
+  coefs <- c(a = 1, b = -2, c = 0.5)
+  V <- matrix(c(1, 0.3, 0.1, 0.3, 2, -0.4, 0.1, -0.4, 0.5), 3)
+  set.seed(9); d1 <- param_fn_mvn(coefs, V, 1000)
+  set.seed(9); d2 <- param_fn_mvn(coefs, V * (1 + 1e-13), 1000)
+  expect_lt(max(abs(d1 - d2)), 1e-10)
+})
+
+test_that("a covariance matrix that is not positive definite falls back with a warning", {
+  coefs <- c(a = 0, b = 0)
+  V <- matrix(c(1, 1, 1, 1), 2)
+  set.seed(3)
+  expect_warning(d <- param_fn_mvn(coefs, V, 100), "not positive definite")
+  expect_equal(dim(d), c(100L, 2L))
+})

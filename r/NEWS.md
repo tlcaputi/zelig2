@@ -20,6 +20,19 @@ Development notes for the (as yet unreleased) 0.1.0.
   with a population mean for factors. Unweighted fits, and any `fn` other than
   `"mean"`, are unaffected.
 
+## Changes
+
+* **Parameter draws use the Cholesky factor of the variance-covariance
+  matrix.** `sim()` previously drew via `MASS::mvrnorm()`, which builds draws
+  from an eigendecomposition. Each eigenvector's sign is arbitrary, so a
+  rounding-level difference in the variance-covariance matrix, or a different
+  linear-algebra library, could produce an entirely different set of draws from
+  the same seed. The Cholesky factor is unique: a seed now gives the same draws
+  on any platform, and draws move only slightly when the matrix moves slightly.
+  The draws come from the same distribution, but a given seed produces
+  different draws than before. A matrix that is not positive definite falls back
+  to `MASS::mvrnorm()` with a warning.
+
 ## Bug fixes
 
 * **Fixed: range plots over a factor covariate were empty.** A range scenario
