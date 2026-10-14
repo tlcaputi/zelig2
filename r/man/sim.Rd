@@ -4,7 +4,7 @@
 \alias{sim}
 \title{Simulate Quantities of Interest}
 \usage{
-sim(object, num = NULL, ...)
+sim(object, num = NULL, draws = c("cholesky", "eigen"), ...)
 }
 \arguments{
 \item{object}{A \code{zelig2} object with at least one scenario set via
@@ -12,6 +12,13 @@ sim(object, num = NULL, ...)
 
 \item{num}{Integer number of simulation draws. If \code{NULL} (the
 default), uses the value stored during the \code{\link{zelig2}} call.}
+
+\item{draws}{How parameter vectors are drawn: \code{"cholesky"} (the
+default) multiplies standard normal draws by the Cholesky factor of the
+variance-covariance matrix; \code{"eigen"} uses \code{MASS::mvrnorm}, an
+eigendecomposition, as Zelig does. Both draw from the same distribution; a
+given seed gives different draws under each. See
+\code{\link{param_fn_mvn}}.}
 
 \item{...}{Currently unused.}
 }
@@ -26,6 +33,7 @@ A new \code{zelig2} object with simulation results in
 \item{fd}{First differences (\code{ev1 - ev}), if applicable.}
 \item{rr}{Risk ratios (\code{ev1 / ev}), for binary / count models.}
 \item{num}{Number of simulation draws used.}
+\item{draws}{How parameter vectors were drawn.}
 }
 }
 \description{

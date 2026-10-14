@@ -4,7 +4,7 @@
 \alias{param_fn_mvn}
 \title{Draw parameters from a multivariate normal distribution}
 \usage{
-param_fn_mvn(coefs, V, num)
+param_fn_mvn(coefs, V, num, draws = c("cholesky", "eigen"))
 }
 \arguments{
 \item{coefs}{Named numeric vector of estimated coefficients.}
@@ -12,6 +12,8 @@ param_fn_mvn(coefs, V, num)
 \item{V}{Variance--covariance matrix of the coefficients.}
 
 \item{num}{Integer number of draws.}
+
+\item{draws}{\code{"cholesky"} or \code{"eigen"}; see Details.}
 }
 \value{
 A \code{num x length(coefs)} matrix; each row is one draw.
@@ -21,15 +23,20 @@ Draws \code{num} parameter vectors from
 \eqn{\mathcal{N}(\hat{\beta}, \hat{V})}{N(beta-hat, V-hat)}.
 }
 \details{
-Draws are \eqn{\hat{\beta} + Z R}{beta-hat + Z R}, where \eqn{Z}{Z} is a
+With \code{draws = "cholesky"} (the default), draws are
+\eqn{\hat{\beta} + Z R}{beta-hat + Z R}, where \eqn{Z}{Z} is a
 \code{num x p} matrix of standard normal draws and \eqn{R}{R} is the upper
 Cholesky factor of \eqn{\hat{V}}{V-hat} (\eqn{R'R = \hat{V}}{R'R = V-hat}).
 The Cholesky factor is unique, so a given seed yields the same draws on any
 platform, and draws change only slightly when \eqn{\hat{V}}{V-hat} changes
-slightly. (An eigendecomposition, as in \code{MASS::mvrnorm}, leaves each
-eigenvector's sign arbitrary, so rounding-level differences in
+slightly. A covariance matrix that is not positive definite falls back to
+the eigendecomposition with a warning.
+
+With \code{draws = "eigen"}, draws come from \code{MASS::mvrnorm}, which
+factors \eqn{\hat{V}}{V-hat} by eigendecomposition, as Zelig does. Each
+eigenvector's sign is arbitrary, so rounding-level differences in
 \eqn{\hat{V}}{V-hat} or a different linear-algebra library can produce an
-entirely different set of draws from the same seed.) A covariance matrix that
-is not positive definite falls back to \code{MASS::mvrnorm} with a warning.
+entirely different set of draws from the same seed. Both methods draw from
+the same distribution.
 }
 \keyword{internal}

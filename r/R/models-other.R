@@ -30,10 +30,10 @@ register_other_models <- function() {
       args <- c(args, list(...))
       do.call(AER::tobit, args)
     },
-    param_fn = function(coefs, V, num) {
+    param_fn = function(coefs, V, num, draws = "cholesky") {
       # Tobit vcov includes Log(scale) but coef() does not
       V_sub <- V[names(coefs), names(coefs), drop = FALSE]
-      param_fn_mvn(coefs, V_sub, num)
+      param_fn_mvn(coefs, V_sub, num, draws)
     },
     qi_fn = function(params, x_row, category, fit, fe_offset = 0) {
       qi_fn_tobit(params, x_row, category, fit, fe_offset = fe_offset)
@@ -58,8 +58,8 @@ register_other_models <- function() {
         quantreg::rq(formula, data = data, tau = tau, ...)
       }
     },
-    param_fn = function(coefs, V, num) {
-      param_fn_mvn(coefs, V, num)
+    param_fn = function(coefs, V, num, draws = "cholesky") {
+      param_fn_mvn(coefs, V, num, draws)
     },
     qi_fn = function(params, x_row, category, fit, fe_offset = 0) {
       qi_fn_quantile(params, x_row, category, fit, fe_offset = fe_offset)

@@ -12,6 +12,12 @@
 #'   \code{\link{setx}}.
 #' @param num Integer number of simulation draws. If \code{NULL} (the
 #'   default), uses the value stored during the \code{\link{zelig2}} call.
+#' @param draws How parameter vectors are drawn: \code{"cholesky"} (the
+#'   default) multiplies standard normal draws by the Cholesky factor of the
+#'   variance-covariance matrix; \code{"eigen"} uses \code{MASS::mvrnorm}, an
+#'   eigendecomposition, as Zelig does. Both draw from the same distribution; a
+#'   given seed gives different draws under each. See
+#'   \code{\link{param_fn_mvn}}.
 #' @param ... Currently unused.
 #'
 #' @return A new \code{zelig2} object with simulation results in
@@ -24,6 +30,7 @@
 #'     \item{fd}{First differences (\code{ev1 - ev}), if applicable.}
 #'     \item{rr}{Risk ratios (\code{ev1 / ev}), for binary / count models.}
 #'     \item{num}{Number of simulation draws used.}
+#'     \item{draws}{How parameter vectors were drawn.}
 #'   }
 #'
 #' @seealso \code{\link{setx}}, \code{\link{plot.zelig2}},
@@ -37,7 +44,7 @@
 #' summary(z)
 #'
 #' @export
-sim <- function(object, num = NULL, ...) {
+sim <- function(object, num = NULL, draws = c("cholesky", "eigen"), ...) {
   if (!inherits(object, "zelig2")) {
     stop("object must be a zelig2 object.", call. = FALSE)
   }
@@ -45,10 +52,11 @@ sim <- function(object, num = NULL, ...) {
     stop("No scenario set. Call setx() before sim().", call. = FALSE)
   }
 
+  draws <- match.arg(draws)
   num <- num %||% object$num
   spec <- object$model_spec
 
-  params <- spec$param_fn(object$coef, object$vcov, num)
+  params <- spec$param_fn(object$coef, object$vcov, num, draws = draws)
 
   qi0 <- simulate_at(params, object$scenario, spec, object)
 
@@ -71,6 +79,7 @@ sim <- function(object, num = NULL, ...) {
     fd  = fd,
     rr  = rr,
     num = num,
+    draws = draws,
     scenario  = object$scenario,
     scenario1 = object$scenario1
   )

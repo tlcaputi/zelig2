@@ -99,3 +99,27 @@ test_that("a covariance matrix that is not positive definite falls back with a w
   expect_warning(d <- param_fn_mvn(coefs, V, 100), "not positive definite")
   expect_equal(dim(d), c(100L, 2L))
 })
+
+test_that("draws = \"eigen\" reproduces MASS::mvrnorm", {
+  coefs <- c(a = 1, b = -2, c = 0.5)
+  V <- matrix(c(1, 0.3, 0.1, 0.3, 2, -0.4, 0.1, -0.4, 0.5), 3)
+  set.seed(4); d1 <- param_fn_mvn(coefs, V, 500, draws = "eigen")
+  set.seed(4); d2 <- MASS::mvrnorm(500, coefs, V)
+  expect_identical(d1, d2)
+  set.seed(1)
+  d <- param_fn_mvn(coefs, V, 200000, draws = "eigen")
+  expect_equal(unname(cov(d)), V, tolerance = 0.02)
+})
+
+test_that("sim() passes draws through and records it", {
+  set.seed(42)
+  df <- data.frame(y = rbinom(300, 1, 0.4), x = rnorm(300))
+  z <- setx(zelig2(y ~ x, model = "logit", data = df), x = 0)
+  set.seed(5); zc <- sim(z, num = 300L)
+  set.seed(5); ze <- sim(z, num = 300L, draws = "eigen")
+  expect_identical(zc$sim_out$draws, "cholesky")
+  expect_identical(ze$sim_out$draws, "eigen")
+  set.seed(5); p <- MASS::mvrnorm(300L, z$coef, z$vcov)
+  expect_equal(ze$sim_out$ev, as.numeric(plogis(p %*% c(1, 0))))
+  expect_error(sim(z, draws = "svd"), "should be one of")
+})
